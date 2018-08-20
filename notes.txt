@@ -1,0 +1,6 @@
+
+Split power recording from Sound Outplay, release power record
+Pause or Cancel recording in the middle
+Online display of trial analysis results
+
+
