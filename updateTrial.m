@@ -5,62 +5,62 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
 %     disp(['updateTrial: ', datestr(now, 'yyyymmdd HH:MM:SS.FFF')]);
 	%% Recording Duration Update  
     Xin.D.Ses.UpdateNumCurrent =	Xin.D.Ses.UpdateNumCurrent + 1; 
-    Xin.D.Ses.DurCurrent =          Xin.D.Ses.UpdateNumCurrent/...
+    Xin.D.Ses.Load.DurCurrent =     Xin.D.Ses.UpdateNumCurrent/...
                                     Xin.D.Sys.NIDAQ.Task_AI_Xin.time.updateRate;
-    Xin.D.Ses.CycleDurCurrent =     mod( Xin.D.Ses.DurCurrent,      Xin.D.Ses.CycleDurTotal);
-    Xin.D.Trl.DurCurrent =          mod( Xin.D.Ses.CycleDurCurrent, Xin.D.Trl.DurTotal); 
-	set(Xin.UI.H.hSes_DurCurrent_Edit,      'string',	sprintf('%5.1f (s)', Xin.D.Ses.DurCurrent));
-    set(Xin.UI.H.hSes_CycleDurCurrent_Edit,	'string',	sprintf('%5.1f (s)', Xin.D.Ses.CycleDurCurrent)); 
-    set(Xin.UI.H.hTrl_DurCurrent_Edit,      'string',   sprintf('%5.1f (s)', Xin.D.Trl.DurCurrent));
+    Xin.D.Ses.Load.CycleDurCurrent =     mod( Xin.D.Ses.Load.DurCurrent,      Xin.D.Ses.Load.CycleDurTotal);
+    Xin.D.Trl.Load.DurCurrent =          mod( Xin.D.Ses.Load.CycleDurCurrent, Xin.D.Trl.Load.DurTotal); 
+	set(Xin.UI.H.hSes_DurCurrent_Edit,      'string',	sprintf('%5.1f (s)', Xin.D.Ses.Load.DurCurrent));
+    set(Xin.UI.H.hSes_CycleDurCurrent_Edit,	'string',	sprintf('%5.1f (s)', Xin.D.Ses.Load.CycleDurCurrent)); 
+    set(Xin.UI.H.hTrl_DurCurrent_Edit,      'string',   sprintf('%5.1f (s)', Xin.D.Trl.Load.DurCurrent));
 
     %% Recording Cycle Number Update  
-	c = floor(Xin.D.Ses.DurCurrent/Xin.D.Ses.CycleDurTotal)+1;  % Current Cycle Number
-    if c~= Xin.D.Ses.CycleNumCurrent && c<=Xin.D.Ses.CycleNumTotal % && c
+	c = floor(Xin.D.Ses.Load.DurCurrent/Xin.D.Ses.Load.CycleDurTotal)+1;  % Current Cycle Number
+    if c~= Xin.D.Ses.Load.CycleNumCurrent && c<=Xin.D.Ses.Load.CycleNumTotal % && c
         % Cycle Update: (c changed & c<=CNT)
-        Xin.D.Ses.CycleNumCurrent =    c;
-        set(Xin.UI.H.hSes_CycleNumCurrent_Edit,'string',	num2str(Xin.D.Ses.CycleNumCurrent));
+        Xin.D.Ses.Load.CycleNumCurrent =    c;
+        set(Xin.UI.H.hSes_CycleNumCurrent_Edit,'string',	num2str(Xin.D.Ses.Load.CycleNumCurrent));
         msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdatePower\tCycle # is ' num2str(c) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
     end
     %% Recording Trial Number Update
-    t =	floor(Xin.D.Ses.CycleDurCurrent/Xin.D.Trl.DurTotal)+1;  % Current Trial Number
+    t =	floor(Xin.D.Ses.Load.CycleDurCurrent/Xin.D.Trl.Load.DurTotal)+1;  % Current Trial Number
     if Xin.D.Ses.UpdateNumCurrent == Xin.D.Ses.UpdateNumTotal   % Session ends
-        Xin.D.Trl.DurCurrent =      Xin.D.Trl.DurTotal;
-        set(Xin.UI.H.hTrl_DurCurrent_Edit,	'string',   sprintf('%5.1f', Xin.D.Trl.DurCurrent));
-    elseif t ~= Xin.D.Trl.NumCurrent 
+        Xin.D.Trl.Load.DurCurrent =      Xin.D.Trl.Load.DurTotal;
+        set(Xin.UI.H.hTrl_DurCurrent_Edit,	'string',   sprintf('%5.1f', Xin.D.Trl.Load.DurCurrent));
+    elseif t ~= Xin.D.Trl.Load.NumCurrent 
         % Trial update: (t changed & session not ended) 
-        Xin.D.Trl.NumCurrent =      t;
-        tt =                        (c-1)*Xin.D.Trl.NumTotal + t; % # of total trl played
-        stimnum =                   Xin.D.Ses.TrlOrderVec(tt);
-        Xin.D.Trl.StimNumCurrent =	['#', num2str(Xin.D.Ses.TrlOrderVec(tt))];
+        Xin.D.Trl.Load.NumCurrent =      t;
+        tt =                        (c-1)*Xin.D.Trl.Load.NumTotal + t; % # of total trl played
+        stimnum =                   Xin.D.Ses.Load.TrlOrderVec(tt);
+            Xin.D.Trl.Load.StimNumCurrent =	['#', num2str(Xin.D.Ses.Load.TrlOrderVec(tt))];
         try 
-            Xin.D.Trl.StimNumNext =	['#', num2str(Xin.D.Ses.TrlOrderVec(tt+1))];
+            Xin.D.Trl.Load.StimNumNext =	['#', num2str(Xin.D.Ses.Load.TrlOrderVec(tt+1))];
         catch
-            Xin.D.Trl.StimNumNext =	'end';
+            Xin.D.Trl.Load.StimNumNext =	'end';
         end
-        Xin.D.Trl.SoundNumCurrent = Xin.D.Ses.TrlIndexSoundNum(stimnum);
+            Xin.D.Trl.Load.SoundNumCurrent = Xin.D.Ses.Load.TrlIndexSoundNum(stimnum);
         try
-            Xin.D.Trl.SoundNameCurrent = ...
-                                    Xin.D.Trl.Names{Xin.D.Trl.SoundNumCurrent};
+            Xin.D.Trl.Load.SoundNameCurrent = ...
+                                            Xin.D.Trl.Load.Names{Xin.D.Trl.Load.SoundNumCurrent};
         catch
-            Xin.D.Trl.SoundNameCurrent = ...
-                                    '???';
+            Xin.D.Trl.Load.SoundNameCurrent = ...
+                                            '???';
         end                                           
-        Xin.D.Trl.AttDesginCurrent =Xin.D.Trl.Attenuations(Xin.D.Trl.SoundNumCurrent);
-        Xin.D.Trl.AttNumCurrent =	Xin.D.Ses.TrlIndexAddAttNum(stimnum);
-        Xin.D.Trl.AttAddCurrent =   Xin.D.Ses.AddAtts(Xin.D.Trl.AttNumCurrent);        
-        Xin.D.Trl.AttCurrent =      Xin.D.Trl.AttDesginCurrent + Xin.D.Trl.AttAddCurrent;
+        Xin.D.Trl.Load.AttDesginCurrent =   Xin.D.Trl.Load.Attenuations(Xin.D.Trl.Load.SoundNumCurrent);
+        Xin.D.Trl.Load.AttNumCurrent =      Xin.D.Ses.Load.TrlIndexAddAttNum(stimnum);
+        Xin.D.Trl.Load.AttAddCurrent =      Xin.D.Ses.Load.AddAtts(Xin.D.Trl.Load.AttNumCurrent);        
+        Xin.D.Trl.Load.AttCurrent =         Xin.D.Trl.Load.AttDesginCurrent + Xin.D.Trl.Load.AttAddCurrent;
         
         % Real Updates
-        invoke(Xin.HW.TDT.PA5,                  'SetAtten', Xin.D.Trl.AttCurrent);        
-        set(Xin.UI.H.hTrl_NumCurrent_Edit,      'String',	num2str(Xin.D.Trl.NumCurrent));
-        set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	num2str(Xin.D.Trl.StimNumCurrent));
-        set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	num2str(Xin.D.Trl.StimNumNext));
-        set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'String',	num2str(Xin.D.Trl.SoundNumCurrent));
-        set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,'String',	num2str(Xin.D.Trl.SoundNameCurrent));
-        set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttDesginCurrent));
-        set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttAddCurrent));
-        set(Xin.UI.H.hTrl_AttCurrent_Edit,      'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttCurrent));
+        invoke(Xin.HW.TDT.PA5,                  'SetAtten', Xin.D.Trl.Load.AttCurrent);        
+        set(Xin.UI.H.hTrl_NumCurrent_Edit,      'String',	num2str(Xin.D.Trl.Load.NumCurrent));
+        set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	num2str(Xin.D.Trl.Load.StimNumCurrent));
+        set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	num2str(Xin.D.Trl.Load.StimNumNext));
+        set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'String',	num2str(Xin.D.Trl.Load.SoundNumCurrent));
+        set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,'String',	num2str(Xin.D.Trl.Load.SoundNameCurrent));
+        set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttDesginCurrent));
+        set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttAddCurrent));
+        set(Xin.UI.H.hTrl_AttCurrent_Edit,      'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttCurrent));
         msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdatePower\tTrial # is ' num2str(t) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
     end

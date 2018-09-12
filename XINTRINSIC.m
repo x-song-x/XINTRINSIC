@@ -100,52 +100,21 @@ function GUI_Edit(varargin)
         case 'hSes_CycleNumTotal_Edit'
             try 
                 t = round(str2double(s));
-                Xin.D.Ses.CycleNumTotal = t;
+                Xin.D.Ses.Load.CycleNumTotal = t;
             catch
                 errordlg('Cycle Number Total input is not valid');
             end
-            Xin.D.Ses.CycleNumCurrent =	NaN; 
-            Xin.D.Ses.DurTotal =        Xin.D.Ses.CycleDurTotal * Xin.D.Ses.CycleNumTotal;        
-            Xin.D.Ses.DurCurrent =      NaN;  
-            Xin.D.Ses.UpdateNumTotal =	Xin.D.Ses.DurTotal * Xin.D.Sys.NIDAQ.Task_AI_Xin.time.updateRate;
-            Xin.D.Ses.UpdateNumCurrent =NaN;      
-            Xin.D.Ses.UpdateNumCurrentAI =NaN;    
-            Xin.D.Ses.FrameTotal =      Xin.D.Ses.DurTotal * Xin.D.Sys.PointGreyCam(2).FrameRate; 
-            Xin.D.Ses.FrameRequested =	NaN;    
-            Xin.D.Ses.FrameAcquired =   NaN;    
-            Xin.D.Ses.FrameAvailable =  NaN;                     
-            Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
-                                        length( Xin.D.Ses.SoundWave)*...
-                                        Xin.D.Ses.AddAttNumTotal*...
-                                        Xin.D.Ses.CycleNumTotal;
-            set(Xin.UI.H.hSes_CycleNumTotal_Edit,	'String',   num2str(Xin.D.Ses.CycleNumTotal));
-            set(Xin.UI.H.hSes_CycleNumCurrent_Edit,	'String',   num2str(Xin.D.Ses.CycleNumCurrent));
-            set(Xin.UI.H.hSes_DurTotal_Edit,        'String',   sprintf('%5.1f (s)', Xin.D.Ses.DurTotal));
-            set(Xin.UI.H.hSes_DurCurrent_Edit,      'String',   sprintf('%5.1f (s)', Xin.D.Ses.DurCurrent)); 
-            set(Xin.UI.H.hSes_FrameTotal_Edit,      'String', 	num2str(Xin.D.Ses.FrameTotal));
-            set(Xin.UI.H.hSes_FrameAcquired_Edit,   'String',   num2str(Xin.D.Ses.FrameAcquired) );
-            set(Xin.UI.H.hSes_FrameAvailable_Edit,  'String',   num2str(Xin.D.Ses.FrameAvailable) );             
+            %% Setup Session Loading
+            SetupSesLoad('Xin', 'CycleNumTotal'); 
         case 'hSes_AddAtts_Edit'
             try
-                eval(['Xin.D.Ses.AddAtts = [', s, '];']);
-                Xin.D.Ses.AddAttString = s;
+                eval(['Xin.D.Ses.Load.AddAtts = [', s, '];']);
+                Xin.D.Ses.Load.AddAttString = s;
             catch
                 errordlg('Additonal attenuations input is not valid');
-            end
-            Xin.D.Ses.AddAttNumTotal =  length(Xin.D.Ses.AddAtts);
-            Xin.D.Ses.CycleDurTotal =   Xin.D.Ses.SoundDurTotal * Xin.D.Ses.AddAttNumTotal;        
-            Xin.D.Ses.CycleDurCurrent =	NaN;
-            Xin.D.Trl.NumTotal =        Xin.D.Trl.SoundNumTotal * Xin.D.Ses.AddAttNumTotal;
-            Xin.D.Trl.NumCurrent =      NaN;
-            Xin.D.Ses.TrlIndexSoundNum =    repmat(1:Xin.D.Trl.SoundNumTotal, 1, Xin.D.Ses.AddAttNumTotal);
-            Xin.D.Ses.TrlIndexAddAttNum =   repelem(1:Xin.D.Ses.AddAttNumTotal, Xin.D.Trl.SoundNumTotal);
-            
-            set(Xin.UI.H.hSes_AddAttNumTotal_Edit,	'String',   num2str(Xin.D.Ses.AddAttNumTotal));
-            set(Xin.UI.H.hSes_CycleDurTotal_Edit, 	'String',	sprintf('%5.1f (s)', Xin.D.Ses.CycleDurTotal));
-            set(Xin.UI.H.hSes_CycleDurCurrent_Edit,	'String',   sprintf('%5.1f (s)', Xin.D.Ses.CycleDurCurrent));
-            set(Xin.UI.H.hTrl_NumTotal_Edit,        'String',   num2str(Xin.D.Trl.NumTotal));
-            set(Xin.UI.H.hTrl_NumCurrent_Edit,      'String',   num2str(Xin.D.Trl.NumCurrent));
-          GUI_Edit('hSes_CycleNumTotal_Edit', num2str(Xin.D.Ses.CycleNumTotal));
+            end            
+            %% Setup Session Loading
+            SetupSesLoad('Xin', 'AddAtts');            
         otherwise
     end
 	%% MSG LOG
@@ -190,9 +159,11 @@ function GUI_Rocker(varargin)
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMky_Side\tSetup the Monkey Side as: '...
                 Xin.D.Mky.Side '\r\n'];
         case 'hSes_TrlOrder_Rocker'
-            Xin.D.Ses.TrlOrder = val;
+            Xin.D.Ses.Load.TrlOrder = val;
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_TrlOrder\tSession trial order selected as: '...
-                Xin.D.Ses.TrlOrder '\r\n']; 
+                Xin.D.Ses.Load.TrlOrder '\r\n']; 
+            % Setup Session Loading
+            SetupSesLoad('Xin', 'TrlOrder');
         case 'hVol_DisplayMode_Rocker'
             switch k
                 case 1          % Draw ROI
@@ -274,13 +245,13 @@ function GUI_NewPointGrey(varargin)
     
 function Ses_Load(varargin)
     global Xin;
+    
   	%% where the call is from     
     if nargin==0
         % called by GUI:      
-        [Xin.D.Ses.SoundFile, Xin.D.Ses.SoundDir, FilterIndex] = ...
+        [Xin.D.Ses.Load.SoundFile, Xin.D.Ses.Load.SoundDir, FilterIndex] = ...
             uigetfile('.wav','Select a Sound File',...
-            [Xin.D.Sys.SoundDir, Xin.D.Ses.SoundFile]);
-        filestr = [Xin.D.Ses.SoundDir, Xin.D.Ses.SoundFile];
+            [Xin.D.Sys.SoundDir, 'test.wav']);
         if FilterIndex == 0
             return
         end
@@ -288,90 +259,22 @@ function Ses_Load(varargin)
         % called by general update: Ses_Load('D:\Sound.wav')
         filestr = varargin{1};
         [filepath,name,ext] = fileparts(filestr);
-        Xin.D.Ses.SoundDir =        filepath;
-        Xin.D.Ses.SoundFile =       [name ext];
+        Xin.D.Ses.Load.SoundDir =        filepath;
+        Xin.D.Ses.Load.SoundFile =       [name ext];
     end
-    %% Load the Sound File & Update Parameters
-    SoundRaw =                      audioread(filestr, 'native');
-	if round(   length(SoundRaw)/Xin.D.Sys.NIDAQ.Task_AO_Xin.time.rate ) ~=...
-                length(SoundRaw)/Xin.D.Sys.NIDAQ.Task_AO_Xin.time.rate
-        errordlg('The sound length is NOT in integer seconds');
-        eval('return;');
-	else
-        SoundInfo =                 audioinfo(filestr);   
+    
+    %% Setup Session Loading
+    SetupSesLoad('Xin', 'Sound');
         
-        % Update Xin.D.Ses      
-        Xin.D.Ses.SoundTitle =      SoundInfo.Title;
-        Xin.D.Ses.SoundArtist =     SoundInfo.Artist;
-        Xin.D.Ses.SoundComment =	SoundInfo.Comment;
-        Xin.D.Ses.SoundWave =       SoundRaw;         
-        Xin.D.Ses.SoundDurTotal =	length(SoundRaw)/Xin.D.Sys.NIDAQ.Task_AO_Xin.time.rate;  
-
-        % Update Xin.D.Trl
-        part = {}; i = 1;
-        remain =                    Xin.D.Ses.SoundComment;
-        while ~isempty(remain)
-            [part{i}, remain] = strtok(remain, ';');
-            [argu, value]=      strtok(part{i}, ':');
-            argu =              argu(2:end);
-            value =             value(3:end);
-            switch argu                
-                case 'TrialNames';          value = textscan(value, '%s', 'Delimiter', ' ');
-                                            Xin.D.Trl.Names = value{1};
-                case 'TrialAttenuations';   value = textscan(value, '%f');
-                                            Xin.D.Trl.Attenuations = value{1};
-                case 'TrialNumberTotal';	Xin.D.Trl.SoundNumTotal =	str2double(value);
-                case 'TrialDurTotal(sec)';	Xin.D.Trl.DurTotal =        str2double(value);
-                case 'TrialDurPreStim(sec)';Xin.D.Trl.DurPreStim =      str2double(value);
-                case 'TrialDurStim(sec)';   Xin.D.Trl.DurStim =         str2double(value);
-                case ''
-                otherwise;                  disp(argu);
-            end
-            i = i+1;
-        end
-                                            Xin.D.Trl.DurPostStim = Xin.D.Trl.DurTotal - ...
-                                                                    Xin.D.Trl.DurPreStim - ...
-                                                                    Xin.D.Trl.DurStim;
-                                            Xin.D.Trl.NumCurrent =	NaN;
-                                            Xin.D.Trl.DurCurrent =	NaN;  
-                                            Xin.D.Trl.StimNumCurrent =      NaN;
-                                            Xin.D.Trl.StimNumNext =         NaN;
-                                            Xin.D.Trl.SoundNumCurrent =    	NaN;
-                                            Xin.D.Trl.SoundNameCurrent =    '';
-                                            Xin.D.Trl.AttNumCurrent =       NaN;
-                                            Xin.D.Trl.AttDesignCurrent =    NaN;
-                                            Xin.D.Trl.AttAddCurrent =       NaN;
-                                            Xin.D.Trl.AttCurrent =          NaN;
-                                            
-                                            
-        % Update SoundMat, Divide SoundWave by Trl.NumTotal
-        Xin.D.Ses.SoundMat =                reshape(Xin.D.Ses.SoundWave,...
-                                                length(Xin.D.Ses.SoundWave)/Xin.D.Trl.SoundNumTotal,...
-                                                Xin.D.Trl.SoundNumTotal); 
-	end       
-    %% Update GUI    
-    Xin.D.Ses.SoundFigureTile =	[   Xin.D.Sys.FullName ': sound "' ...
-                                    Xin.D.Ses.SoundFile '" loaded'];
-    set(Xin.UI.H0.hFig,                     'Name',     Xin.D.Ses.SoundFigureTile);
-	set(Xin.UI.H.hSes_SoundDurTotal_Edit,   'String',   sprintf('%5.1f (s)', Xin.D.Ses.SoundDurTotal));
-	set(Xin.UI.H.hTrl_SoundNumTotal_Edit,	'String',   num2str(Xin.D.Trl.SoundNumTotal));
-    set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'String',   num2str(Xin.D.Trl.SoundNumCurrent));
-    set(Xin.UI.H.hTrl_DurTotal_Edit,        'String',   sprintf('%5.1f (s)', Xin.D.Trl.DurTotal));
-    set(Xin.UI.H.hTrl_DurCurrent_Edit,      'String',   sprintf('%5.1f (s)', Xin.D.Trl.DurCurrent)); 
-    set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	num2str(Xin.D.Trl.StimNumCurrent));
-    set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	num2str(Xin.D.Trl.StimNumNext));
-    set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'String',	num2str(Xin.D.Trl.SoundNumCurrent));
-    set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,'String',	num2str(Xin.D.Trl.SoundNameCurrent));
-    set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttDesignCurrent));
-    set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttAddCurrent));
-    set(Xin.UI.H.hTrl_AttCurrent_Edit,      'String',	sprintf('%5.1f (dB)',Xin.D.Trl.AttCurrent));
-
+    %% XINTRINSIC Specific GUI Updates    
+    Xin.D.Sys.FigureTitle =                 [   Xin.D.Sys.FullName ...
+                                                Xin.D.Ses.Load.SoundFigureTitle];
+    set(Xin.UI.H0.hFig,                     'Name',     Xin.D.Sys.FigureTitle);
     set(Xin.UI.H.hSes_Start_Momentary,      'Enable',	'on');  % Enable start
-    %% Update Others
-        GUI_Edit('hSes_AddAtts_Edit', Xin.D.Ses.AddAttString);       
+       
     %% LOG MSG
     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_Load\tSession sound loaded as from file: "' ...
-        Xin.D.Ses.SoundFile '"\r\n'];
+        Xin.D.Ses.Load.SoundFile '"\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     
 function Ses_Start
@@ -390,22 +293,9 @@ function Ses_Start
                     'Take one before starting a session.'    });
         return;
     end
-    %% Arrange the Sound Trial Order & Update Xin.D.Sys.NI
-    switch Xin.D.Ses.TrlOrder
-        case 'Sequential'
-            Xin.D.Ses.TrlOrderMat =     repmat(1:Xin.D.Trl.NumTotal, Xin.D.Ses.CycleNumTotal, 1);
-        case 'Randomized'
-            Xin.D.Ses.TrlOrderMat =     [];
-            for i = 1:Xin.D.Ses.CycleNumTotal
-                Xin.D.Ses.TrlOrderMat = [Xin.D.Ses.TrlOrderMat; randperm(Xin.D.Trl.NumTotal)];
-            end            
-        otherwise
-            errordlg('wrong trial order option');
-    end
-    Xin.D.Ses.TrlOrderVec =         reshape(Xin.D.Ses.TrlOrderMat',1,[]); % AddAtt Order
-    Xin.D.Ses.TrlOrderSoundVec =    Xin.D.Ses.TrlIndexSoundNum(Xin.D.Ses.TrlOrderVec);
+    %% Update Xin.D.Sys.NI
     Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData =...
-                                    reshape(Xin.D.Ses.SoundMat(:,Xin.D.Ses.TrlOrderSoundVec),1,[])';
+                                    reshape(Xin.D.Ses.Load.SoundMat(:,Xin.D.Ses.Load.TrlOrderSoundVec),1,[])';
     Xin.D.Ses.DataFileSize =        Xin.D.Vol.ImageHeight/Xin.D.Vol.VideoBin *...
                                     Xin.D.Vol.ImageWidth/Xin.D.Vol.VideoBin *...
                                     Xin.D.Ses.FrameTotal*2/10^9;
@@ -415,7 +305,7 @@ function Ses_Start
     
 	%% Questdlg the information
     disp('Trial Order:');
-    disp(Xin.D.Ses.TrlOrderMat);
+    disp(Xin.D.Ses.Load.TrlOrderMat);
   	videoinfo = {...
         ['System Light Source: ',       Xin.D.Sys.Light.Source,     '; '],...
      	['System Light Port: ',     	Xin.D.Sys.Light.Port,       '; '],...
@@ -427,19 +317,19 @@ function Ses_Start
      	['Monkey Side: ',       Xin.D.Mky.Side,                     '; '],...
      	['Experiment Date: ',	Xin.D.Exp.DateStr,                  '; '],...
         ['Experiment Depth: ',	sprintf('%5.2f',Xin.D.Exp.Depth),   ' (LT1 fine turn); '],...
-        ['Session Sound File: ',        Xin.D.Ses.SoundFile,        '; '],...
-        ['Session Sound Dir: ',         Xin.D.Ses.SoundDir,         '; '],...
-        ['Session Sound Title: ',       Xin.D.Ses.SoundTitle,       '; '],...
-        ['Session Sound Artist: ',      Xin.D.Ses.SoundArtist,      '; '],...
-        ['Session Cycle Duration: ',    sprintf('%5.1f',Xin.D.Ses.CycleDurTotal),	' (s); '],...
-        ['Session Cycle Number Total: ',sprintf('%d',   Xin.D.Ses.CycleNumTotal),	'; '],...
-        ['Session Duration Total: ',	sprintf('%5.1f',Xin.D.Ses.DurTotal),        ' (s); '],...
+        ['Session Sound File: ',        Xin.D.Ses.Load.SoundFile,        '; '],...
+        ['Session Sound Dir: ',         Xin.D.Ses.Load.SoundDir,         '; '],...
+        ['Session Sound Title: ',       Xin.D.Ses.Load.SoundTitle,       '; '],...
+        ['Session Sound Artist: ',      Xin.D.Ses.Load.SoundArtist,      '; '],...
+        ['Session Cycle Duration: ',    sprintf('%5.1f',Xin.D.Ses.Load.CycleDurTotal),	' (s); '],...
+        ['Session Cycle Number Total: ',sprintf('%d',   Xin.D.Ses.Load.CycleNumTotal),	'; '],...
+        ['Session Duration Total: ',	sprintf('%5.1f',Xin.D.Ses.Load.DurTotal),        ' (s); '],...
         ['Session Data File Size: ',    sprintf('%5.2f',Xin.D.Ses.DataFileSize),	' (GB); '],...
-        ['Trial Number per Sound: ',    sprintf('%d',   Xin.D.Trl.NumTotal),        '; '],...
-        ['Trial Duration: ',            sprintf('%5.2f',Xin.D.Trl.DurTotal),        ' (s); '],...
-        ['Trial Duration PreStim: ',	sprintf('%5.2f',Xin.D.Trl.DurPreStim),      ' (s); '],...
-        ['Trial Duration Stim: ',       sprintf('%5.2f',Xin.D.Trl.DurStim),         ' (s); '],...
-        ['Trial Duration PostStim: ',	sprintf('%5.2f',Xin.D.Trl.DurPostStim),     ' (s); ']...
+        ['Trial Number per Sound: ',    sprintf('%d',   Xin.D.Trl.Load.NumTotal),        '; '],...
+        ['Trial Duration: ',            sprintf('%5.2f',Xin.D.Trl.Load.DurTotal),        ' (s); '],...
+        ['Trial Duration PreStim: ',	sprintf('%5.2f',Xin.D.Trl.Load.DurPreStim),      ' (s); '],...
+        ['Trial Duration Stim: ',       sprintf('%5.2f',Xin.D.Trl.Load.DurStim),         ' (s); '],...
+        ['Trial Duration PostStim: ',	sprintf('%5.2f',Xin.D.Trl.Load.DurPostStim),     ' (s); ']...
         };
     promptinfo = [...
         videoinfo,...
@@ -472,44 +362,46 @@ function Ses_Start
     Xin.D.Ses.Save.MkySide =            Xin.D.Mky.Side;
     Xin.D.Ses.Save.ExpDateStr =         Xin.D.Exp.DateStr;
     Xin.D.Ses.Save.ExpDepth =           Xin.D.Exp.Depth;
-    Xin.D.Ses.Save.SesSoundFile =       Xin.D.Ses.SoundFile;
-    Xin.D.Ses.Save.SesSoundDir =        Xin.D.Ses.SoundDir;    
-    Xin.D.Ses.Save.SesSoundTitle =      Xin.D.Ses.SoundTitle;
-    Xin.D.Ses.Save.SesSoundArtist =     Xin.D.Ses.SoundArtist; 
-    Xin.D.Ses.Save.SesSoundComment =	Xin.D.Ses.SoundComment;  
-    Xin.D.Ses.Save.SesSoundWave =       Xin.D.Ses.SoundWave;  
-    Xin.D.Ses.Save.SesSoundDurTotal =   Xin.D.Ses.SoundDurTotal;  
-    Xin.D.Ses.Save.AddAtts =            Xin.D.Ses.AddAtts; 
-    Xin.D.Ses.Save.AddAttNumTotal =     Xin.D.Ses.AddAttNumTotal; 
-    Xin.D.Ses.Save.SesCycleDurTotal =   Xin.D.Ses.CycleDurTotal;
-    Xin.D.Ses.Save.SesCycleNumTotal =	Xin.D.Ses.CycleNumTotal; 
-    Xin.D.Ses.Save.SesDurTotal =        Xin.D.Ses.DurTotal;
+    Xin.D.Ses.Save.SesSoundFile =       Xin.D.Ses.Load.SoundFile;
+    Xin.D.Ses.Save.SesSoundDir =        Xin.D.Ses.Load.SoundDir;    
+    Xin.D.Ses.Save.SesSoundTitle =      Xin.D.Ses.Load.SoundTitle;
+    Xin.D.Ses.Save.SesSoundArtist =     Xin.D.Ses.Load.SoundArtist; 
+    Xin.D.Ses.Save.SesSoundComment =	Xin.D.Ses.Load.SoundComment;  
+    Xin.D.Ses.Save.SesSoundWave =       Xin.D.Ses.Load.SoundWave;  
+    Xin.D.Ses.Save.SesSoundDurTotal =   Xin.D.Ses.Load.SoundDurTotal;  
+    Xin.D.Ses.Save.AddAtts =            Xin.D.Ses.Load.AddAtts; 
+    Xin.D.Ses.Save.AddAttNumTotal =     Xin.D.Ses.Load.AddAttNumTotal; 
+    Xin.D.Ses.Save.SesCycleDurTotal =   Xin.D.Ses.Load.CycleDurTotal;
+    Xin.D.Ses.Save.SesCycleNumTotal =	Xin.D.Ses.Load.CycleNumTotal; 
+    Xin.D.Ses.Save.SesDurTotal =        Xin.D.Ses.Load.DurTotal;
     Xin.D.Ses.Save.SesFrameTotal =      Xin.D.Ses.FrameTotal;
     Xin.D.Ses.Save.SesFrameNum =        zeros(      Xin.D.Ses.FrameTotal,    1);
     Xin.D.Ses.Save.SesTimestamps =      char(zeros( Xin.D.Ses.FrameTotal,    21));
     Xin.D.Ses.Save.SesPowerMeter =      zeros(      Xin.D.Ses.FrameTotal,...
                                                     Xin.D.Vol.FramePowerSampleNum);                                           
-    Xin.D.Ses.Save.TrlIndexSoundNum =   Xin.D.Ses.TrlIndexSoundNum;
-    Xin.D.Ses.Save.TrlIndexAddAttNum =  Xin.D.Ses.TrlIndexAddAttNum;    
-    Xin.D.Ses.Save.SesTrlOrder =        Xin.D.Ses.TrlOrder;
-    Xin.D.Ses.Save.SesTrlOrderMat =     Xin.D.Ses.TrlOrderMat;
-    Xin.D.Ses.Save.SesTrlOrderVec =     Xin.D.Ses.TrlOrderVec;
-    Xin.D.Ses.Save.SesTrlOrderSoundVec =Xin.D.Ses.TrlOrderSoundVec;
-    Xin.D.Ses.Save.TrlNumTotal =        Xin.D.Trl.NumTotal;
-    Xin.D.Ses.Save.TrlDurTotal =        Xin.D.Trl.DurTotal;
-    Xin.D.Ses.Save.TrlDurPreStim =      Xin.D.Trl.DurPreStim;
-    Xin.D.Ses.Save.TrlDurStim =         Xin.D.Trl.DurStim;
-    Xin.D.Ses.Save.TrlDurPostStim =     Xin.D.Trl.DurPostStim;
-    Xin.D.Ses.Save.TrlNames =           Xin.D.Trl.Names;
-    Xin.D.Ses.Save.TrlAttenuations =	Xin.D.Trl.Attenuations;
+    Xin.D.Ses.Save.TrlIndexSoundNum =   Xin.D.Ses.Load.TrlIndexSoundNum;
+    Xin.D.Ses.Save.TrlIndexAddAttNum =  Xin.D.Ses.Load.TrlIndexAddAttNum;    
+    Xin.D.Ses.Save.SesTrlOrder =        Xin.D.Ses.Load.TrlOrder;
+    Xin.D.Ses.Save.SesTrlOrderMat =     Xin.D.Ses.Load.TrlOrderMat;
+    Xin.D.Ses.Save.SesTrlOrderVec =     Xin.D.Ses.Load.TrlOrderVec;
+    Xin.D.Ses.Save.SesTrlOrderSoundVec =Xin.D.Ses.Load.TrlOrderSoundVec;
+    Xin.D.Ses.Save.TrlNumTotal =        Xin.D.Trl.Load.NumTotal;
+    Xin.D.Ses.Save.TrlDurTotal =        Xin.D.Trl.Load.DurTotal;
+    Xin.D.Ses.Save.TrlDurPreStim =      Xin.D.Trl.Load.DurPreStim;
+    Xin.D.Ses.Save.TrlDurStim =         Xin.D.Trl.Load.DurStim;
+    Xin.D.Ses.Save.TrlDurPostStim =     Xin.D.Trl.Load.DurPostStim;
+    Xin.D.Ses.Save.TrlNames =           Xin.D.Trl.Load.Names;
+    Xin.D.Ses.Save.TrlAttenuations =	Xin.D.Trl.Load.Attenuations;
     
     %% GUI Update & Lock     
-    Xin.D.Ses.SoundFigureTile =     [Xin.D.Sys.FullName ': now playing "' ...
-                                    Xin.D.Ses.SoundFile '"'];
-    set(Xin.UI.H0.hFig, 'Name', Xin.D.Ses.SoundFigureTile);
+    Xin.D.Ses.Load.SoundFigureTitle =   [   ': now playing "' ...
+                                            Xin.D.Ses.Load.SoundFile '"'];    
+    Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
+                                            Xin.D.Ses.Load.SoundFigureTitle];
+    set(Xin.UI.H0.hFig, 'Name', Xin.D.Sys.FigureTitle);
     EnableGUI('inactive');    
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tSession is about to start with the sound: "' ...
-        Xin.D.Ses.SoundFile '"\r\n'];
+        Xin.D.Ses.Load.SoundFile '"\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     %% TDT PA5 Setup
   	Xin.HW.TDT.PA5 = actxcontrol('PA5.x',[0 0 1 1]);
@@ -593,10 +485,11 @@ function Ses_Start
 	fclose(hFile);    
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tData file saved. Session stopped\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);   
-    Xin.D.Ses.SoundFigureTile =     [Xin.D.Sys.FullName ': now "' ...
-                                    Xin.D.Ses.SoundFile '" recording session has ended'];
-    set(Xin.UI.H0.hFig, 'Name', Xin.D.Ses.SoundFigureTile);
-    
+    Xin.D.Ses.Load.SoundFigureTitle =   [   ': now "' ...
+                                            Xin.D.Ses.Load.SoundFile '" recording session has ended']; 
+    Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
+                                            Xin.D.Ses.Load.SoundFigureTitle];
+    set(Xin.UI.H0.hFig, 'Name', Xin.D.Sys.FigureTitle);
 function Cam_CleanUp
     global Xin         
     %% Check Surface After Image

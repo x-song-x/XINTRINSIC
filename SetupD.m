@@ -48,8 +48,12 @@ for d = 1
     if isempty(dir(Xin.D.Sys.DataDir))  % Create the Sys.Data folder if not yet
         mkdir(Xin.D.Sys.DataDir);
     end     
-        Xin.D.Sys.SoundDir =	'D:\Dropbox\==LightUp==\=M #8 Functional Imaging\=S=Sound Stimuli\';
-                
+        Xin.D.Sys.FigureTitle = Xin.D.Sys.FullName;
+    
+    %%%%%%%%%%%%%%%%%%%%%%% Sound
+    Xin.D.Sys.Sound.SR =    100e3;
+    Xin.D.Sys.SoundDir =	'D:\Dropbox\==LightUp==\=M #8 Functional Imaging\=S=Sound Stimuli\';
+        
     %%%%%%%%%%%%%%%%%%%%%%% Thorlabs Power Meter     
     % Thorlabs Power Meter 1.0.2 is required as of 20170930
     % Using SCPI (Standard Commands for Programmable Instruments)
@@ -204,7 +208,7 @@ for d = 1
     T.chan(i).units =               'DAQmx_Val_Volts';     
     T.base.sampClkTimebaseRate =    20e6;                
     T.base.sampClkTimebaseSrc =     Xin.D.Sys.NIDAQ.Config.TimebaseBridgeLine;
-    T.time.rate =                   100e3; 
+    T.time.rate =                   Xin.D.Sys.Sound.SR; 
     T.time.sampleMode =             'DAQmx_Val_FiniteSamps'; 
     T.time.updateRate =             Xin.D.Sys.PointGreyCam(2).RecUpdateRate;  
     T.time.sampsPerChanToAcquire =	T.time.rate*4;
@@ -295,77 +299,74 @@ end
 
 %% D.Ses (Session, one session should be a bunch of trials measure)
 for d = 1
-    %%%%%%%%%%%%%%%%%%%%%%% Sound    
-    Xin.D.Ses.SoundFile =           'test.wav';
-    Xin.D.Ses.SoundDir =            '';
-    Xin.D.Ses.SoundTitle =          '';
-    Xin.D.Ses.SoundArtist =         '';
-    Xin.D.Ses.SoundComment =        '';
-    Xin.D.Ses.SoundFigureTile =     [Xin.D.Sys.FullName ': now playing "' ...
-                                    Xin.D.Ses.SoundTitle '"'];
-    Xin.D.Ses.SoundWave =           int16([]);
-    Xin.D.Ses.SoundMat =            int16([]);                            
-    Xin.D.Ses.SoundDurTotal =       NaN;
+   	%%%%%%%%%%%%%%%%%%%%%%% Load (for SetupSesLoad)
+    Xin.D.Ses.Load.SoundFile =          'test.wav';
+    Xin.D.Ses.Load.SoundDir =           '';
+    Xin.D.Ses.Load.SoundSR =            Xin.D.Sys.Sound.SR;
+    Xin.D.Ses.Load.SoundTitle =         '';
+    Xin.D.Ses.Load.SoundArtist =        '';
+    Xin.D.Ses.Load.SoundComment =       '';    
+    Xin.D.Ses.Load.SoundFigureTitle =	[': now playing "' Xin.D.Ses.Load.SoundTitle '"'];
+    Xin.D.Ses.Load.SoundWave =          int16([]);                          
+    Xin.D.Ses.Load.SoundDurTotal =      NaN;    
+    Xin.D.Ses.Load.SoundMat =           int16([]);  
     
-    %%%%%%%%%%%%%%%%%%%%%%% Time
-    Xin.D.Ses.AddAtts =             0; 
-    Xin.D.Ses.AddAttString =        num2str(Xin.D.Ses.AddAtts);
-    Xin.D.Ses.AddAttNumTotal =      length(Xin.D.Ses.AddAtts);
-	Xin.D.Ses.CycleNumTotal =       2;    
-    Xin.D.Ses.CycleNumCurrent =     NaN; 
-    Xin.D.Ses.CycleDurTotal =       NaN;
-    Xin.D.Ses.CycleDurCurrent =     NaN;  
-    Xin.D.Ses.DurTotal =            NaN;
-	Xin.D.Ses.DurCurrent =          NaN;     
+    Xin.D.Ses.Load.AddAtts =             0; 
+    Xin.D.Ses.Load.AddAttString =        num2str(Xin.D.Ses.Load.AddAtts);
+    Xin.D.Ses.Load.AddAttNumTotal =      length(Xin.D.Ses.Load.AddAtts);     
+    Xin.D.Ses.Load.CycleDurTotal =       NaN;
+    Xin.D.Ses.Load.CycleDurCurrent =     NaN;  
+    Xin.D.Ses.Load.TrlIndexSoundNum =    [];
+    Xin.D.Ses.Load.TrlIndexAddAttNum =   [];
+    
+	Xin.D.Ses.Load.CycleNumTotal =       2;    
+    Xin.D.Ses.Load.CycleNumCurrent =     NaN; 
+    Xin.D.Ses.Load.DurTotal =            NaN;
+	Xin.D.Ses.Load.DurCurrent =          NaN;   
+
+    Xin.D.Ses.Load.TrlOrder =            'Sequential';
+    Xin.D.Ses.Load.TrlOrderMat =         NaN;
+    Xin.D.Ses.Load.TrlOrderVec =         reshape(Xin.D.Ses.Load.TrlOrderMat',1,[]);
+    Xin.D.Ses.Load.TrlOrderSoundVec =    [];
+
+ 
+    %%%%%%%%%%%%%%%%%%%%%%% XINTRINSIC Specific  
     Xin.D.Ses.UpdateNumTotal =      NaN;
   	Xin.D.Ses.UpdateNumCurrent =    NaN; 
-    Xin.D.Ses.UpdateNumCurrentAI =  NaN;   
-
-    %%%%%%%%%%%%%%%%%%%%%%% Image 
+    Xin.D.Ses.UpdateNumCurrentAI =  NaN;   % NI Analog Input
     Xin.D.Ses.FrameTotal =          NaN;
     Xin.D.Ses.FrameRequested =      NaN;    
     Xin.D.Ses.FrameAcquired =       NaN;    
     Xin.D.Ses.FrameAvailable =      NaN;
-    
-    %%%%%%%%%%%%%%%%%%%%%%% Trial Order
-    Xin.D.Ses.TrlIndexSoundNum =    [];
-    Xin.D.Ses.TrlIndexAddAttNum =   [];
-    
-    Xin.D.Ses.TrlOrder =            'Sequential';
-    Xin.D.Ses.TrlOrderMat =         NaN;
-    Xin.D.Ses.TrlOrderVec =         reshape(Xin.D.Ses.TrlOrderMat',1,[]);
-    Xin.D.Ses.TrlOrderSoundVec =    [];
-    
-    %%%%%%%%%%%%%%%%%%%%%%% Data File
     Xin.D.Ses.DataFile =            '';    
     Xin.D.Ses.DataFileSize =        NaN;   
 end
 
 %% D.Trl (Trial)
 for d = 1
-   	%%%%%%%%%%%%%%%%%%%%%%% Trial
-    Xin.D.Trl.NumTotal =            NaN;
-    Xin.D.Trl.NumCurrent =          NaN;
-    Xin.D.Trl.StimNumCurrent =      NaN;
-    Xin.D.Trl.StimNumNext =         NaN;
-    Xin.D.Trl.SoundNumTotal =    	NaN;
-    Xin.D.Trl.SoundNumCurrent =    	NaN;
-    Xin.D.Trl.SoundNameCurrent =    '';
-    Xin.D.Trl.AttNumCurrent =       NaN;
-    Xin.D.Trl.AttDesignCurrent =    NaN;
-    Xin.D.Trl.AttAddCurrent =       NaN;
-    Xin.D.Trl.AttCurrent =          NaN;
+   	%%%%%%%%%%%%%%%%%%%%%%% Load (for SetupSesLoad)
+	Xin.D.Trl.Load.Names =          {};
+    Xin.D.Trl.Load.Attenuations =	[];
+    Xin.D.Trl.Load.SoundNumTotal =	NaN;
+    Xin.D.Trl.Load.DurTotal =       NaN;
+	Xin.D.Trl.Load.DurCurrent =     NaN;
+    Xin.D.Trl.Load.DurPreStim =     NaN;
+    Xin.D.Trl.Load.DurStim =        NaN; 
+    Xin.D.Trl.Load.DurPostStim =	Xin.D.Trl.Load.DurTotal - ...
+                                    Xin.D.Trl.Load.DurPreStim - ...
+                                    Xin.D.Trl.Load.DurStim;
     
-    Xin.D.Trl.DurTotal =        NaN;
-	Xin.D.Trl.DurCurrent =      NaN;
-
-    Xin.D.Trl.DurPreStim =      NaN;
-    Xin.D.Trl.DurStim =         NaN;
-    Xin.D.Trl.DurPostStim =     Xin.D.Trl.DurTotal - ...
-                                Xin.D.Trl.DurPreStim - ...
-                                Xin.D.Trl.DurStim;
-	Xin.D.Trl.Names =           {};
-    Xin.D.Trl.Attenuations =    [];
+    Xin.D.Trl.Load.NumTotal =           NaN;
+    Xin.D.Trl.Load.NumCurrent =         NaN;
+    Xin.D.Trl.Load.AttNumCurrent =      NaN;
+    Xin.D.Trl.Load.AttDesignCurrent =	NaN;
+    Xin.D.Trl.Load.AttAddCurrent =      NaN;
+    Xin.D.Trl.Load.AttCurrent =         NaN;
+        
+    Xin.D.Trl.Load.StimNumCurrent =     NaN;
+    Xin.D.Trl.Load.StimNumNext =        NaN;
+    Xin.D.Trl.Load.SoundNumCurrent =	NaN;
+    Xin.D.Trl.Load.SoundNameCurrent =	'';
 
 end
 

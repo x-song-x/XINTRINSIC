@@ -34,7 +34,7 @@ Xin.UI.C = S.Color;
 
     % create the UI figure 
     Xin.UI.H0.hFig= figure(...
-        'Name',         Xin.D.Sys.FullName,...
+        'Name',         Xin.D.Sys.FigureTitle,...
         'NumberTitle',  'off',...
         'Resize',       'off',...
         'color',        S.Color.BG,...
@@ -388,6 +388,7 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;
         Xin.UI.H.hExp_Depth_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hExp_Date_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
         set(Xin.UI.H.hExp_Depth_Edit,	'tag', 'hExp_Depth_Edit');
+        set(Xin.UI.H.hExp_Date_Edit,	'tag', 'hExp_Date_Edit');
         clear WP;  
                
 S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
@@ -409,25 +410,6 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         Xin.UI.H.hSes_Start_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
         set(Xin.UI.H.hSes_Load_Momentary,   'tag', 'hSes_Load_Momentary');
         set(Xin.UI.H.hSes_Start_Momentary,	'tag', 'hSes_Start_Momentary');
-        clear WP; 
-        
-	WP.name = 'Ses Trigger';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'RockerSwitch';	
-        WP.row      = S.PnltCurrent.row;
-        WP.column   = S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Triggers'};
-        WP.tip = {  'Triggers'};
-        WP.inputOptions = {'HardwareRec', 'SoftwareRec', 'SoftwareGrab'};
-        WP.inputDefault = 3;
-        Panelette(S, WP, 'Xin');
-        Xin.UI.H.hSes_CamTrigger_Rocker =	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hSes_CamTrigger_Rocker,  'Tag',  'hSes_CamTrigger_Rocker');
-        a = get(Xin.UI.H.hSes_CamTrigger_Rocker, 'Children');
-        set(a(1), 'Enable', 'inactive'); 
-        set(a(2), 'Enable', 'inactive'); 
-        set(a(3), 'Enable', 'inactive'); 
         clear WP; 
         
  	WP.name = 'Ses TrlOrder';
@@ -455,8 +437,8 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
                     'Cycle Num Total (cycle)'};
         WP.tip = {	'Cycle Num Current (cycle)',...
                     'Cycle Num Total (cycle)'};
-        WP.inputValue = {   Xin.D.Ses.CycleNumCurrent,...
-                            Xin.D.Ses.CycleNumTotal};
+        WP.inputValue = {   Xin.D.Ses.Load.CycleNumCurrent,...
+                            Xin.D.Ses.Load.CycleNumTotal};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'off','on'};
         Panelette(S, WP, 'Xin');    
@@ -476,8 +458,8 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
                     'Additional Attenuation Number Total'};
         WP.tip = {	'Additional Attenuations (dB)',...
                     'Additional Attenuation Number Total'};
-        WP.inputValue = {   Xin.D.Ses.AddAtts,...
-                            Xin.D.Ses.AddAttNumTotal};
+        WP.inputValue = {   Xin.D.Ses.Load.AddAtts,...
+                            Xin.D.Ses.Load.AddAttNumTotal};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'on','off'};
         Panelette(S, WP, 'Xin');    
@@ -498,11 +480,12 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         WP.tip = {	'',...
                     'Cycle Duration Total (s)'};
         WP.inputValue = {   0,...
-                            Xin.D.Ses.SoundDurTotal};
+                            Xin.D.Ses.Load.SoundDurTotal};
         WP.inputFormat = {'','%5.1f'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hSes_SoundDurTotal_Edit =      Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2}; 
+        set(Xin.UI.H.hSes_SoundDurTotal_Edit,   'Tag', 'hSes_SoundDurTotal_Edit');
         clear WP;   
         
     WP.name = 'Ses CycleTime';
@@ -515,13 +498,15 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
                     'Cycle Duration Total (s)'};
         WP.tip = {	'Cycle Duration Current (s)',...
                     'Cycle Duration Total (s)'};
-        WP.inputValue = {   Xin.D.Ses.CycleDurCurrent,...
-                            Xin.D.Ses.CycleDurTotal};
+        WP.inputValue = {   Xin.D.Ses.Load.CycleDurCurrent,...
+                            Xin.D.Ses.Load.CycleDurTotal};
         WP.inputFormat = {'%5.1f','%5.1f'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hSes_CycleDurCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hSes_CycleDurTotal_Edit =      Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2}; 
+        set(Xin.UI.H.hSes_CycleDurCurrent_Edit,	'Tag', 'hSes_CycleDurCurrent_Edit');
+        set(Xin.UI.H.hSes_CycleDurTotal_Edit,   'Tag', 'hSes_CycleDurTotal_Edit');
         clear WP;   
         
   	WP.name = 'Ses Time';
@@ -534,13 +519,35 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
                     'Session Duraion (s)'};
         WP.tip = {	'Session Current Time (s)',...
                     'Session Duraion (s)'};
-        WP.inputValue = {   Xin.D.Ses.DurCurrent,...
-                            Xin.D.Ses.DurTotal};
+        WP.inputValue = {   Xin.D.Ses.Load.DurCurrent,...
+                            Xin.D.Ses.Load.DurTotal};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hSes_DurCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hSes_DurTotal_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hSes_DurCurrent_Edit,	'Tag', 'hSes_DurCurrent_Edit');
+        set(Xin.UI.H.hSes_DurTotal_Edit,	'Tag', 'hSes_DurTotal_Edit');        
+        clear WP; 
+        
+S.PnltCurrent.row = 2;      S.PnltCurrent.column = 9;
+	WP.name = 'Ses Trigger';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'RockerSwitch';	
+        WP.row      = S.PnltCurrent.row;
+        WP.column   = S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { 'Triggers'};
+        WP.tip = {  'Triggers'};
+        WP.inputOptions = {'HardwareRec', 'SoftwareRec', 'SoftwareGrab'};
+        WP.inputDefault = 3;
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hSes_CamTrigger_Rocker =	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
+        set(Xin.UI.H.hSes_CamTrigger_Rocker,  'Tag',  'hSes_CamTrigger_Rocker');
+        a = get(Xin.UI.H.hSes_CamTrigger_Rocker, 'Children');
+        set(a(1), 'Enable', 'inactive'); 
+        set(a(2), 'Enable', 'inactive'); 
+        set(a(3), 'Enable', 'inactive'); 
         clear WP; 
         
   	WP.name = 'Ses Frame#1';
@@ -591,13 +598,15 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'Total Trial Number / Cycle'};
         WP.tip = {	'Current Trial Number',...
                     'Total Trial Number / Cycle'};
-        WP.inputValue = {   Xin.D.Trl.NumCurrent,...
-                            Xin.D.Trl.NumTotal};
+        WP.inputValue = {   Xin.D.Trl.Load.NumCurrent,...
+                            Xin.D.Trl.Load.NumTotal};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_NumCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_NumTotal_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hTrl_NumCurrent_Edit,	'Tag', 'hTrl_NumCurrent_Edit');
+        set(Xin.UI.H.hTrl_NumTotal_Edit,	'Tag', 'hTrl_NumTotal_Edit');
         clear WP;  
         
 	WP.name = 'Trl Stim #';
@@ -610,13 +619,15 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'NEXT Trial Stim #'};
         WP.tip = {	'CURRENT Trial Stim #',...
                     'NEXT Trial Stim #'};
-        WP.inputValue = {   Xin.D.Trl.StimNumCurrent,...
-                            Xin.D.Trl.StimNumNext};
+        WP.inputValue = {   Xin.D.Trl.Load.StimNumCurrent,...
+                            Xin.D.Trl.Load.StimNumNext};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_StimNumCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_StimNumNext_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hTrl_StimNumCurrent_Edit,	'Tag', 'hTrl_StimNumCurrent_Edit');
+        set(Xin.UI.H.hTrl_StimNumNext_Edit,     'Tag', 'hTrl_StimNumNext_Edit');
         clear WP;  
         
 	WP.name = 'Trl Sound #';
@@ -629,13 +640,15 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'Total Sound #'};
         WP.tip = {	'Current Sound #',...
                     'Total Sound #'};
-        WP.inputValue = {   Xin.D.Trl.SoundNumCurrent,...
-                            Xin.D.Trl.SoundNumTotal};
+        WP.inputValue = {   Xin.D.Trl.Load.SoundNumCurrent,...
+                            Xin.D.Trl.Load.SoundNumTotal};
         WP.inputFormat = {'%s','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_SoundNumCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_SoundNumTotal_Edit =      Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'Tag', 'hTrl_SoundNumCurrent_Edit');
+        set(Xin.UI.H.hTrl_SoundNumTotal_Edit,	'Tag', 'hTrl_SoundNumTotal_Edit');
         clear WP;  	
         
     WP.name = 'Trl SoundFeature';
@@ -648,14 +661,16 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'CURRENT Sound Name'};
         WP.tip = {	'Sound Design Attenuation (dB)',...
                     'CURRENT Sound Name'};
-        WP.inputValue = {   Xin.D.Trl.AttDesignCurrent,...
-                            Xin.D.Trl.SoundNameCurrent};
+        WP.inputValue = {   Xin.D.Trl.Load.AttDesignCurrent,...
+                            Xin.D.Trl.Load.SoundNameCurrent};
         WP.inputFormat = {'%5.1f','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_AttDesignCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_SoundNameCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
         set(Xin.UI.H.hTrl_SoundNameCurrent_Edit, 'FontSize', 9);
+        set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,	'Tag', 'hTrl_AttDesignCurrent_Edit');
+        set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,	'Tag', 'hTrl_SoundNameCurrent_Edit');
         clear WP; 
         
 	WP.name = 'Trl Attenuation';
@@ -668,13 +683,15 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'Total Attenuation (dB)'};
         WP.tip = {	'Additional Attenuation (dB)',...
                     'Total Attenuation (dB)'};
-        WP.inputValue = {  	Xin.D.Trl.AttAddCurrent,...
-                            Xin.D.Trl.AttCurrent};
+        WP.inputValue = {  	Xin.D.Trl.Load.AttAddCurrent,...
+                            Xin.D.Trl.Load.AttCurrent};
         WP.inputFormat = {'%5.1f','%5.1f'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_AttAddCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_AttCurrent_Edit =     Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'Tag', 'hTrl_AttAddCurrent_Edit');
+        set(Xin.UI.H.hTrl_AttCurrent_Edit,      'Tag', 'hTrl_AttCurrent_Edit');
         clear WP;  
         
   	WP.name = 'Trl Time';
@@ -687,13 +704,15 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
                     'Trial Duraion'};
         WP.tip = {	'Trial Current Time',...
                     'Trial Duraion'};
-        WP.inputValue = {   Xin.D.Trl.DurCurrent,...
-                            Xin.D.Trl.DurTotal};
+        WP.inputValue = {   Xin.D.Trl.Load.DurCurrent,...
+                            Xin.D.Trl.Load.DurTotal};
         WP.inputFormat = {'%d','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hTrl_DurCurrent_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hTrl_DurTotal_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
+        set(Xin.UI.H.hTrl_DurCurrent_Edit,	'Tag', 'hTrl_DurCurrent_Edit');
+        set(Xin.UI.H.hTrl_DurTotal_Edit,	'Tag', 'hTrl_DurTotal_Edit');
         clear WP;   
         
 S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;        
