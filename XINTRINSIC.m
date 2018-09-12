@@ -31,8 +31,8 @@ clear global;
 global Xin;
 
 %% INITIALIZATION
-Xin.D.Sys.Name =        mfilename;         % Grab the current script's name
-SetupD;                % Initiate parameters
+Xin.D.Sys.Name =        mfilename;          % Grab the current script's name
+SetupD;                                     % Initiate parameters
 SetupThorlabsPowerMeters;
 SetupPointGreyCams;
 SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');

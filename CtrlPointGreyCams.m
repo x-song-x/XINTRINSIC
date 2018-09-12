@@ -199,7 +199,7 @@ function Preview_Switch(varargin)
     updateMsg(Xin.D.Exp.hLog, msg);
     
 function Ref_Image(varargin)
-    global Xin TP
+    global Xin
 	%% Get the Inputs
     if nargin==0
         % called by GUI: 
@@ -217,23 +217,14 @@ function Ref_Image(varargin)
         ['System Cam Shutter: ',        sprintf('%5.2f',Xin.D.Sys.PointGreyCam(N).Shutter),  ' (ms); '],...
         ['System Cam Gain: ',           sprintf('%5.2f',Xin.D.Sys.PointGreyCam(N).Gain),     ' (dB); '],...
         ['System Cam DispGainNum: ',	num2str(Xin.D.Sys.PointGreyCam(N).DispGainNum),  ' (frames); '],...
-        };
+        };    
+    if ~exist(Xin.D.Exp.DataDir, 'dir')
+        mkdir(Xin.D.Exp.DataDir);
+    end
     switch CamName
         case 'Firefly MV FMVU-03MTM'
-            try
-                ExpDir =                Xin.D.Exp.DataDir;
-            catch
-                ExpDir =                TP.D.Exp.DataDir;
-            end
             DataNumApp =                '_AnimalMonitor'; 
         case 'Flea3 FL3-U3-88S2C'
-            TP.D.Exp.DataDir =      [   TP.D.Sys.DataDir,...
-                                        TP.D.Mky.ID, '-',...
-                                        TP.D.Exp.DateStr, '\']; 
-            if ~exist(TP.D.Exp.DataDir, 'dir')
-                mkdir(TP.D.Exp.DataDir);
-            end
-            ExpDir =                    TP.D.Exp.DataDir;
             DataNumApp =                '_BrainSurface';   
         case 'Grasshopper3 GS3-U3-23S6M'
         	imageinfo = [imageinfo,{...
@@ -249,14 +240,7 @@ function Ref_Image(varargin)
             if strcmp(Xin.D.Sys.Light.Port, 'Koehler')
                 PowerMeterFlag = 1;
             end
-            DataBit =                   16;
-            Xin.D.Exp.DataDir =     [   Xin.D.Sys.DataDir,...
-                                        Xin.D.Mky.ID, '-',...
-                                        Xin.D.Exp.DateStr, '\']; 
-            if ~exist(Xin.D.Exp.DataDir, 'dir')
-                mkdir(Xin.D.Exp.DataDir);
-            end
-            ExpDir =                    Xin.D.Exp.DataDir;            
+            DataBit =                   16;           
             DataNumApp =                ['_',...
                                         Xin.D.Sys.Light.Source,  '_',...
                                         Xin.D.Sys.Light.Port,    '_',...
@@ -319,7 +303,7 @@ function Ref_Image(varargin)
         {['Power Port: ',  	power,              ' (W); ']} ];
     end
     imagedescription = strjoin(imageinfo);
-    imwrite(Xin.D.Sys.PointGreyCam(N).RefImage, [ExpDir, dataname, '.tif'],...
+    imwrite(Xin.D.Sys.PointGreyCam(N).RefImage, [Xin.D.Exp.DataDir, dataname, '.tif'],...
         'Compression',          'deflate',...
         'Description',          imagedescription);
     %% LOG MSG    

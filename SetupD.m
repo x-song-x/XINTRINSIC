@@ -37,11 +37,9 @@ for d = 1
 end
 
 %% D.SYS (System)
-for d = 1
-    
+for d = 1    
 	%%%%%%%%%%%%%%%%%%%%%%% Name & Folder
     % avoid writing again if already run by the main script
-    
         Xin.D.Sys.FullName =	'[XINTRINSIC: X-polarization enhanced INTRINSIC & fluorescent functional imaging]';
     if ~isfield(Xin.D.Sys, 'Name')      % No defined in the main program yet
         Xin.D.Sys.Name =        'XINTRINSIC';
@@ -290,6 +288,7 @@ for d = 1
     Xin.D.Exp.hLog =                fopen([Xin.D.Sys.DataDir, Xin.D.Exp.LogFileName], 'w');
     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tXINTRINSIC\tXINTRINSIC Opened, What a BEAUTIFUL day!\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
+        
 	%%%%%%%%%%%%%%%%%%%%%%% Geometry
     Xin.D.Exp.Depth =               0;          % Z depth (in LT1 fine turns)
 end
