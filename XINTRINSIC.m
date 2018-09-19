@@ -58,13 +58,13 @@ set(Xin.UI.H.hMky_ID_Toggle1,           'SelectionChangeFcn',   [Xin.D.Sys.Name,
 set(Xin.UI.H.hMky_ID_Toggle2,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_Side_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hExp_Depth_Edit,           'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
-set(Xin.UI.H.hSes_Load_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Load'')']);
 set(Xin.UI.H.hSes_CycleNumTotal_Edit,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_AddAtts_Edit,         'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_TrlOrder_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hSes_Load_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Load'')']);
 set(Xin.UI.H.hSes_Start_Momentary,      'Callback',             [Xin.D.Sys.Name, '(''Ses_Start'')']);
 set(Xin.UI.H.hVol_DisplayMode_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
-set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''GUI_NewPointGrey'')']);
+set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 
 %% CALLBACK FUNCTIONS
 function flag = CheckRunning
@@ -139,7 +139,8 @@ function GUI_Rocker(varargin)
     for j = 1:3
         if strcmp( get(hc(j), 'string'), val )
             set(hc(j),	'backgroundcolor', Xin.UI.C.SelectB);
-            k = j;
+            set(h,      'SelectedObject',  hc(j));
+            k = j;  % for later reference
         else                
             set(hc(j),	'backgroundcolor', Xin.UI.C.TextBG);
         end
@@ -228,21 +229,7 @@ function GUI_Toggle(varargin)
         otherwise
     end
     updateMsg(Xin.D.Exp.hLog, msg);
-    
-function GUI_NewPointGrey(varargin)  
-    %% Where the call is from
-    global Xin
-    if nargin==0
-        N = get(gcbo,   'UserData');
-    else
-        N = varagin(1);
-    end
-    SetupFigurePointGrey(N);
-    CtrlPointGreyCams('InitializeCallbacks', N);  
-    CtrlPointGreyCams('Cam_Shutter',	N, Xin.D.Sys.PointGreyCam(N).Shutter);
-  	CtrlPointGreyCams('Cam_Gain',       N, Xin.D.Sys.PointGreyCam(N).Gain); 
-    CtrlPointGreyCams('Cam_DispGain',	N, Xin.D.Sys.PointGreyCam(N).DispGainNum);      
-    
+      
 function Ses_Load(varargin)
     global Xin;
     
@@ -266,7 +253,7 @@ function Ses_Load(varargin)
     %% Setup Session Loading
     SetupSesLoad('Xin', 'Sound');
         
-    %% XINTRINSIC Specific GUI Updates    
+    %% XINTRINSIC Specific Updates    
     Xin.D.Sys.FigureTitle =                 [   Xin.D.Sys.FullName ...
                                                 Xin.D.Ses.Load.SoundFigureTitle];
     set(Xin.UI.H0.hFig,                     'Name',     Xin.D.Sys.FigureTitle);
@@ -294,6 +281,10 @@ function Ses_Start
         return;
     end
     %% Update Xin.D.Sys.NI
+	Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
+                                    length( Xin.D.Ses.Load.SoundWave)*...
+                                    Xin.D.Ses.Load.AddAttNumTotal*...
+                                    Xin.D.Ses.Load.CycleNumTotal; 
     Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData =...
                                     reshape(Xin.D.Ses.Load.SoundMat(:,Xin.D.Ses.Load.TrlOrderSoundVec),1,[])';
     Xin.D.Ses.DataFileSize =        Xin.D.Vol.ImageHeight/Xin.D.Vol.VideoBin *...
@@ -490,6 +481,7 @@ function Ses_Start
     Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
                                             Xin.D.Ses.Load.SoundFigureTitle];
     set(Xin.UI.H0.hFig, 'Name', Xin.D.Sys.FigureTitle);
+
 function Cam_CleanUp
     global Xin         
     %% Check Surface After Image

@@ -19,7 +19,7 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
         % Cycle Update: (c changed & c<=CNT)
         Xin.D.Ses.Load.CycleNumCurrent =    c;
         set(Xin.UI.H.hSes_CycleNumCurrent_Edit,'string',	num2str(Xin.D.Ses.Load.CycleNumCurrent));
-        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdatePower\tCycle # is ' num2str(c) '\r\n'];
+        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdateTrial\tCycle # is ' num2str(c) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
     end
     %% Recording Trial Number Update
@@ -61,7 +61,7 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
         set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttDesginCurrent));
         set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttAddCurrent));
         set(Xin.UI.H.hTrl_AttCurrent_Edit,      'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttCurrent));
-        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdatePower\tTrial # is ' num2str(t) '\r\n'];
+        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdateTrial\tTrial # is ' num2str(t) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
     end
 

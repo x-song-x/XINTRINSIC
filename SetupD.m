@@ -345,16 +345,16 @@ end
 %% D.Trl (Trial)
 for d = 1
    	%%%%%%%%%%%%%%%%%%%%%%% Load (for SetupSesLoad)
-	Xin.D.Trl.Load.Names =          {};
-    Xin.D.Trl.Load.Attenuations =	[];
-    Xin.D.Trl.Load.SoundNumTotal =	NaN;
-    Xin.D.Trl.Load.DurTotal =       NaN;
-	Xin.D.Trl.Load.DurCurrent =     NaN;
-    Xin.D.Trl.Load.DurPreStim =     NaN;
-    Xin.D.Trl.Load.DurStim =        NaN; 
-    Xin.D.Trl.Load.DurPostStim =	Xin.D.Trl.Load.DurTotal - ...
-                                    Xin.D.Trl.Load.DurPreStim - ...
-                                    Xin.D.Trl.Load.DurStim;
+	Xin.D.Trl.Load.Names =              {};
+    Xin.D.Trl.Load.Attenuations =       [];
+    Xin.D.Trl.Load.SoundNumTotal =      NaN;
+    Xin.D.Trl.Load.DurTotal =           NaN;
+	Xin.D.Trl.Load.DurCurrent =         NaN;
+    Xin.D.Trl.Load.DurPreStim =         NaN;
+    Xin.D.Trl.Load.DurStim =            NaN; 
+    Xin.D.Trl.Load.DurPostStim =        Xin.D.Trl.Load.DurTotal - ...
+                                        Xin.D.Trl.Load.DurPreStim - ...
+                                        Xin.D.Trl.Load.DurStim;
     
     Xin.D.Trl.Load.NumTotal =           NaN;
     Xin.D.Trl.Load.NumCurrent =         NaN;
