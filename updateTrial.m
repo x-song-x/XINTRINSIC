@@ -54,10 +54,10 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
         % Real Updates
         invoke(Xin.HW.TDT.PA5,                  'SetAtten', Xin.D.Trl.Load.AttCurrent);        
         set(Xin.UI.H.hTrl_NumCurrent_Edit,      'String',	num2str(Xin.D.Trl.Load.NumCurrent));
-        set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	num2str(Xin.D.Trl.Load.StimNumCurrent));
-        set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	num2str(Xin.D.Trl.Load.StimNumNext));
+        set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	Xin.D.Trl.Load.StimNumCurrent);
+        set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	Xin.D.Trl.Load.StimNumNext);
         set(Xin.UI.H.hTrl_SoundNumCurrent_Edit,	'String',	num2str(Xin.D.Trl.Load.SoundNumCurrent));
-        set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,'String',	num2str(Xin.D.Trl.Load.SoundNameCurrent));
+        set(Xin.UI.H.hTrl_SoundNameCurrent_Edit,'String',	Xin.D.Trl.Load.SoundNameCurrent);
         set(Xin.UI.H.hTrl_AttDesignCurrent_Edit,'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttDesginCurrent));
         set(Xin.UI.H.hTrl_AttAddCurrent_Edit,	'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttAddCurrent));
         set(Xin.UI.H.hTrl_AttCurrent_Edit,      'String',	sprintf('%5.1f (dB)',Xin.D.Trl.Load.AttCurrent));

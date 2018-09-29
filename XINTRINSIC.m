@@ -33,7 +33,7 @@ global Xin;
 %% INITIALIZATION
 Xin.D.Sys.Name =        mfilename;          % Grab the current script's name
 SetupD;                                     % Initiate parameters
-SetupThorlabsPowerMeters;
+SetupThorlabsPowerMeters('Xin');
 SetupPointGreyCams;
 SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');
     CtrlPointGreyCams('InitializeCallbacks', 2);     
