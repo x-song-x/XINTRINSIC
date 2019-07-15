@@ -33,6 +33,10 @@ global Xin;
 %% INITIALIZATION
 Xin.D.Sys.Name =        mfilename;          % Grab the current script's name
 SetupD;                                     % Initiate parameters
+% [indx,tf] = listdlg(    'PromptString',     'Select a system configuration',...
+%                         'SelectionMode',    'single',...
+%                         'ListString',       fn);
+
 SetupThorlabsPowerMeters('Xin');
 SetupPointGreyCams;
 SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');
@@ -57,14 +61,18 @@ set(Xin.UI.H.hSys_HeadCube_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name,
 set(Xin.UI.H.hMky_ID_Toggle1,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_ID_Toggle2,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_Side_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hExp_Angle_PotenSlider,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hExp_Angle_PotenEdit,      'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hExp_Depth_Edit,           'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_CycleNumTotal_Edit,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_AddAtts_Edit,         'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_TrlOrder_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hSes_Load_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Load'')']);
 set(Xin.UI.H.hSes_Start_Momentary,      'Callback',             [Xin.D.Sys.Name, '(''Ses_Start'')']);
+set(Xin.UI.H.hSes_Stop_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Stop'')']);
 set(Xin.UI.H.hVol_DisplayMode_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
+set(Xin.UI.H.hMon_Pupillometry_Momentary,'callback',            [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 
 %% CALLBACK FUNCTIONS
 function flag = CheckRunning
@@ -224,12 +232,56 @@ function GUI_Toggle(varargin)
                 Xin.D.Sys.Light.Source '\r\n'];
         case 'hMky_ID_Toggle'
             Xin.D.Mky.ID = val;
+            Xin.D.Exp.DataDir =     [   Xin.D.Sys.DataDir,...
+                                        Xin.D.Mky.ID, '-',...
+                                        Xin.D.Exp.DateStr, '\'];  
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMky_ID\tSetup the Monkey ID as: '...
                 Xin.D.Mky.ID '\r\n']; 
         otherwise
     end
     updateMsg(Xin.D.Exp.hLog, msg);
       
+function GUI_Poten(varargin)
+    global Xin;
+  	%% where the call is from      
+    if nargin==0
+        % called by GUI:            GUI_Poten   
+        label =         get(gcbo,   'Tag');    
+        [~, label] =    strtok(reverse(label), '_');
+        label =         reverse(label(2:end));
+        uictrlstyle =   get(gcbo,   'Style');
+        switch uictrlstyle
+            case 'slider'
+                value = get(gcbo,   'Value');
+            case 'edit'
+                value = str2double(get(gcbo,'string'));
+            otherwise
+                errordlg('What''s the hell is this?');
+                return;
+        end
+    else
+        % called by general update: GUI_Poten('hSys_LightSource_Toggle', 'Blue')
+        label =     varargin{1};
+        value =     varargin{2};
+    end 
+    %% Update D & Log & GUI
+    eval(['hEdit = Xin.UI.H.',  label,'_PotenEdit;']);
+    eval(['hSlider = Xin.UI.H.',label,'_PotenSlider;']);
+	switch label
+        case 'hExp_Angle'
+            if round(value)>=0 || round(value)<=360
+                Xin.D.Exp.Angle = round(value);
+            else
+                Xin.D.Exp.Angle = Xin.D.Exp.Angle;
+            end
+            set(hEdit,      'string',   sprintf('%d',value));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_Angle\tupdated as: '...
+                num2str(Xin.D.Exp.Angle) '\r\n']; 
+        otherwise
+    end
+            set(hSlider,    'value',    value);
+    updateMsg(Xin.D.Exp.hLog, msg);
+    
 function Ses_Load(varargin)
     global Xin;
     
@@ -352,6 +404,7 @@ function Ses_Start
   	Xin.D.Ses.Save.MkyID =              Xin.D.Mky.ID;
     Xin.D.Ses.Save.MkySide =            Xin.D.Mky.Side;
     Xin.D.Ses.Save.ExpDateStr =         Xin.D.Exp.DateStr;
+    Xin.D.Ses.Save.ExpAngle =           Xin.D.Exp.Angle;
     Xin.D.Ses.Save.ExpDepth =           Xin.D.Exp.Depth;
     Xin.D.Ses.Save.SesSoundFile =       Xin.D.Ses.Load.SoundFile;
     Xin.D.Ses.Save.SesSoundDir =        Xin.D.Ses.Load.SoundDir;    

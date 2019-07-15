@@ -52,8 +52,22 @@ for d = 1
     
     %%%%%%%%%%%%%%%%%%%%%%% Sound
     Xin.D.Sys.Sound.SR =    100e3;
-    Xin.D.Sys.SoundDir =	'D:\Dropbox\==LightUp==\=M #8 Functional Imaging\=S=Sound Stimuli\';
+    Xin.D.Sys.SoundDir =	'Z:\=Sounds=\';
         
+    %%%%%%%%%%%%%%%%%%%%%%% System Configurations
+    Xin.D.Sys.Configurations{1} =   struct(...
+        'SystemOptionName',     'Pointgrey_16307994_old_left',...
+        'CameraDriver',         'PointGrey',...
+        'CameraSerialNumber',   '16307994'); 
+    Xin.D.Sys.Configurations{2} =   struct(...
+        'SystemOptionName',     'Pointgrey_15452576_new_right',...
+        'CameraDriver',         'PointGrey',...
+        'CameraSerialNumber',   '15452576');   
+    Xin.D.Sys.Configurations{2} =   struct(...
+        'SystemOptionName',     'Thorlabs_??????_new_right',...
+        'CameraDriver',         'Thorlabs',...
+        'CameraSerialNumber',   '???');            
+    
     %%%%%%%%%%%%%%%%%%%%%%% Thorlabs Power Meter     
     % Thorlabs Power Meter 1.0.2 is required as of 20170930
     % Using SCPI (Standard Commands for Programmable Instruments)
@@ -98,7 +112,8 @@ for d = 1
     i = 2;
     Xin.D.Sys.PointGreyCam(i).DeviceName =      'Grasshopper3 GS3-U3-23S6M';
     Xin.D.Sys.PointGreyCam(i).Format =          'F7_Mono12_1920x1200_Mode7';
-    Xin.D.Sys.PointGreyCam(i).SerialNumber =	'16307994';
+%     Xin.D.Sys.PointGreyCam(i).SerialNumber =	'16307994';     % old, left
+    Xin.D.Sys.PointGreyCam(i).SerialNumber =	'15452576';     % new, right
     Xin.D.Sys.PointGreyCam(i).Comments =        'Wide-field Imaging';
     Xin.D.Sys.PointGreyCam(i).Located =         0;
  	Xin.D.Sys.PointGreyCam(i).FrameRate =       80;         % Max is 87.075;
@@ -110,24 +125,40 @@ for d = 1
     Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        Xin.D.Sys.PointGreyCam(i).FrameRate/...
                                                         Xin.D.Sys.PointGreyCam(i).RecUpdateRate;      
 	Xin.D.Sys.PointGreyCam(i).UpdatePreviewHistogram =  1;    
-	Xin.D.Sys.PointGreyCam(i).UpdatePreviewWindowFcn =	@updatePreviewFrame;            
+	Xin.D.Sys.PointGreyCam(i).UpdatePreviewWindowFcn =	@updatePreviewFrame;          
     
-    i = 3;                                  
-	Xin.D.Sys.PointGreyCam(i).DeviceName =      'Flea3 FL3-U3-88S2C';
-    % Xin.D.Sys.PointGreyCam(i).Format =          'F7_BayerRG8_4000x3000_Mode10';
-    Xin.D.Sys.PointGreyCam(i).Format =          'F7_Mono8_4000x3000_Mode10';
-    Xin.D.Sys.PointGreyCam(i).SerialNumber =	'14301633';
-    Xin.D.Sys.PointGreyCam(i).Comments =        'FANTASIA FOV finder';
+    i = 3;
+	Xin.D.Sys.PointGreyCam(i).DeviceName =      'Firefly MV FMVU-03MTM';
+    Xin.D.Sys.PointGreyCam(i).Format =          'F7_Mono8_752x480_Mode0';
+    Xin.D.Sys.PointGreyCam(i).SerialNumber =	'19084735';
+    Xin.D.Sys.PointGreyCam(i).Comments =        'Pupillometry';
     Xin.D.Sys.PointGreyCam(i).Located =         0;
  	Xin.D.Sys.PointGreyCam(i).FrameRate =       10;
     Xin.D.Sys.PointGreyCam(i).ShutterResv =     0;
-    Xin.D.Sys.PointGreyCam(i).GainPolar =       'Max';    
+    Xin.D.Sys.PointGreyCam(i).GainPolar =       'Max';
     Xin.D.Sys.PointGreyCam(i).PreviewRot =      180;
-    Xin.D.Sys.PointGreyCam(i).PreviewZoom =     4;
+    Xin.D.Sys.PointGreyCam(i).PreviewZoom =     1;
     Xin.D.Sys.PointGreyCam(i).RecUpdateRate =	NaN;
-    Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        NaN;       
+    Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        NaN;     
 	Xin.D.Sys.PointGreyCam(i).UpdatePreviewHistogram =  0;  
-	Xin.D.Sys.PointGreyCam(i).UpdatePreviewWindowFcn =	@updatePreviewFrame;                                      
+	Xin.D.Sys.PointGreyCam(i).UpdatePreviewWindowFcn =	@updatePreviewFrame;
+    
+%     i = 3;                                  
+% 	Xin.D.Sys.PointGreyCam(i).DeviceName =      'Flea3 FL3-U3-88S2C';
+%     % Xin.D.Sys.PointGreyCam(i).Format =          'F7_BayerRG8_4000x3000_Mode10';
+%     Xin.D.Sys.PointGreyCam(i).Format =          'F7_Mono8_4000x3000_Mode10';
+%     Xin.D.Sys.PointGreyCam(i).SerialNumber =	'14301633';
+%     Xin.D.Sys.PointGreyCam(i).Comments =        'FANTASIA FOV finder';
+%     Xin.D.Sys.PointGreyCam(i).Located =         0;
+%  	Xin.D.Sys.PointGreyCam(i).FrameRate =       10;
+%     Xin.D.Sys.PointGreyCam(i).ShutterResv =     0;
+%     Xin.D.Sys.PointGreyCam(i).GainPolar =       'Max';    
+%     Xin.D.Sys.PointGreyCam(i).PreviewRot =      180;
+%     Xin.D.Sys.PointGreyCam(i).PreviewZoom =     4;
+%     Xin.D.Sys.PointGreyCam(i).RecUpdateRate =	NaN;
+%     Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        NaN;       
+% 	Xin.D.Sys.PointGreyCam(i).UpdatePreviewHistogram =  0;  
+% 	Xin.D.Sys.PointGreyCam(i).UpdatePreviewWindowFcn =	@updatePreviewFrame;                                      
 
     %%%%%%%%%%%%%%%%%%%%%%% NI
     % ScanImage 5.2, released by end of 2016, support Matlab calling from 
@@ -274,7 +305,7 @@ end
 %% D.Mky (Monkey)
 for d = 1
 	%%%%%%%%%%%%%%%%%%%%%%% Monkey 
-    Xin.D.Mky.Lists.ID =            {'M00x', '', ''; 'M80Z', 'MCal', ''};
+    Xin.D.Mky.Lists.ID =            {'M00x', 'M96B', 'M126D'; 'M117B', 'M111Z', 'M132D'};
     Xin.D.Mky.Lists.Side =          {'LEFT', 'RIGHT', ''};    
     
     Xin.D.Mky.ID =                  Xin.D.Mky.Lists.ID{1};
@@ -295,6 +326,7 @@ for d = 1
         updateMsg(Xin.D.Exp.hLog, msg);
         
 	%%%%%%%%%%%%%%%%%%%%%%% Geometry
+    Xin.D.Exp.Angle =               74;
     Xin.D.Exp.Depth =               0;          % Z depth (in LT1 fine turns)
 end
 

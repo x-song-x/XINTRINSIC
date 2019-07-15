@@ -187,7 +187,7 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'LED ', 'light source'};
         WP.tip = {  'LED ', 'light source'};
-        WP.inputOptions = {'Red', 'Green', ''; 'Blue', 'White', ''};
+        WP.inputOptions = {'Amber', 'Green', 'Blue'; 'Red', 'FRed', 'NIR'};
         WP.inputDefault = [1, 0];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_LightSource_Toggle1 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
@@ -195,6 +195,14 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         set(Xin.UI.H.hSys_LightSource_Toggle1,  'Tag', 'hSys_LightSource_Toggle1');
         set(Xin.UI.H.hSys_LightSource_Toggle2,  'Tag', 'hSys_LightSource_Toggle2');
         clear WP;
+        hc = get(Xin.UI.H.hSys_LightSource_Toggle1, 'Children');
+            set(hc(3), 'ForegroundColor', [ 1       1       0   ]);
+            set(hc(2), 'ForegroundColor', [ 0       1       0   ]);
+            set(hc(1), 'ForegroundColor', [ 0       0       1   ]);
+        hc = get(Xin.UI.H.hSys_LightSource_Toggle2, 'Children');
+            set(hc(3), 'ForegroundColor', [ 1       0       0   ]);
+            set(hc(2), 'ForegroundColor', [ 0.75    0       0   ]);
+            set(hc(1), 'ForegroundColor', [ 0.5     0       0   ]);
          
 	WP.name = 'Sys LightPort';
         WP.handleseed = 'Xin.UI.H0.Panelette';
@@ -350,7 +358,27 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 8;
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hMky_Side_Rocker =     Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
         set(Xin.UI.H.hMky_Side_Rocker,  'Tag',  'hMky_Side_Rocker');
-        clear WP;       
+        clear WP;  
+        
+    WP.name = 'Exp Angle';
+        WP.handleseed =	'Xin.UI.H0.Panelette';
+        WP.type =       'Potentiometer';	
+        WP.row =        S.PnltCurrent.row;
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;  
+        WP.text = 	{	['The angle reading on LCRM2']};
+        WP.tip =    {   'The angle reading on LCRM2',...
+                        'For the right side setup, with NMV-6x16#311383 + GS3-U3-23S6M#15452576',...
+                        'Flat Angle ~= 74degree'};
+        WP.inputRange =     [0 360];
+        WP.inputValue =     Xin.D.Exp.Angle;
+        WP.inputSlideStep=  [1/360 10/360];
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hExp_Angle_PotenSlider = Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hExp_Angle_PotenEdit =   Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hExp_Angle_PotenSlider,	'tag', 'hExp_Angle_PotenSlider');
+        set(Xin.UI.H.hExp_Angle_PotenEdit,  	'tag', 'hExp_Angle_PotenEdit');
+        clear WP;   
 
 S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;        
   	WP.name = 'Exp RefImage';
@@ -530,7 +558,6 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         set(Xin.UI.H.hSes_DurTotal_Edit,	'Tag', 'hSes_DurTotal_Edit');        
         clear WP; 
         
-S.PnltCurrent.row = 2;      S.PnltCurrent.column = 9;
 	WP.name = 'Ses Trigger';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'RockerSwitch';	
@@ -582,7 +609,25 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 9;
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hSes_FrameAvailable_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-        clear WP;       
+        clear WP;     
+        
+	WP.name = 'Ses Stop';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'MomentarySwitch'; 
+        WP.row =        S.PnltCurrent.row;         
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { '',...
+                    'Stop the seesion'};
+        WP.tip = {[ '',...
+                    'Stop the seesion'],...
+                  [ '',...
+                    'Stop the session'] };
+        WP.inputEnable = {'off','on'};
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hSes_Stop_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
+        set(Xin.UI.H.hSes_Stop_Momentary,	'tag', 'hSes_Start_Momentary');
+        clear WP; 
         
 S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;  
   	WP.name = 'Trl Number';
@@ -772,16 +817,19 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'Animal Monitor',...
-                    ''};
+                    'Pupillometry'};
         WP.tip = {[ 'Animal Monitor',...
-                    ''],...
+                    'Pupillometry'],...
                   [ 'Monitoring animal''s condition',...
-                    ''] };
-        WP.inputEnable = {'on','off'};
+                    'Pupillometry'] };
+        WP.inputEnable = {'on','on'};
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hMon_AnimalMon_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1};
+        Xin.UI.H.hMon_Pupillometry_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
         set(Xin.UI.H.hMon_AnimalMon_Momentary,      'tag', 'hMon_AnimalMon_Momentary');
+        set(Xin.UI.H.hMon_Pupillometry_Momentary,	'tag', 'hMon_Pupillometry_Momentary');
         set(Xin.UI.H.hMon_AnimalMon_Momentary,      'UserData', 1');
+        set(Xin.UI.H.hMon_Pupillometry_Momentary,	'UserData', 3');
         clear WP;  
         
 Xin.UI.FigPGC(2).hImage =                       Xin.UI.H0.hImage;

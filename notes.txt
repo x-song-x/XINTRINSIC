@@ -1,5 +1,24 @@
+Recording, Next Step:
+	DOIT:	Select system configuration (camera) in the beginning
+	DOIT:	Camera Lens Aperture
+	DOIT:	EDC Options
+	DOIT:	Power Meter configurations
+	DOIT:	Monkey Prep Options: (intact skull / window)
+	DOIT:	Depth into a slider
+	Load & display a reference frame for adjusting the FOV
+	DOIT:	Pre-randomized session option
+	DOIT:	Auto-randomized session option
+	DOIT:	Counting down dlg: colors
+	DOIT:	TDT PA5 confirmation
+	DOIT:	Monitoring Camera Gain Presettings
+	Pupilometry & animal monitoring recording
+	Pause or Cancel recording in the middle
 
-Pause or Cancel recording in the middle
-Online display of trial analysis results
+Recording, Long Term:
+	Online display of trial analysis results
 
-
+Analysis:
+	Release file handles after finish
+	Cancel the video palyback
+	FFT base line model and correction
+	
