@@ -1,24 +1,58 @@
 Recording, Next Step:
 	DOIT:	Select system configuration (camera) in the beginning
-	DOIT:	Camera Lens Aperture
-	DOIT:	EDC Options
-	DOIT:	Power Meter configurations
-	DOIT:	Monkey Prep Options: (intact skull / window)
-	DOIT:	Depth into a slider
-	Load & display a reference frame for adjusting the FOV
-	DOIT:	Pre-randomized session option
-	DOIT:	Auto-randomized session option
-	DOIT:	Counting down dlg: colors
-	DOIT:	TDT PA5 confirmation
-	DOIT:	Monitoring Camera Gain Presettings
-	Pupilometry & animal monitoring recording
-	Pause or Cancel recording in the middle
 
 Recording, Long Term:
+	Pre-randomized session option
+	Load & display a reference frame for adjusting the FOV
+	TDT PA5 confirmation
+	Matlab hard restart with too high PT camera max shutter value
+	Occational file system window freezing during sound loading
 	Online display of trial analysis results
+	Cancel the session with patial session data save
+	panalette momentary's lower button's tip does not display
 
 Analysis:
 	Release file handles after finish
 	Cancel the video palyback
 	FFT base line model and correction
+	
+
+New Variables, GUI Elements, & Procedural Steps
+	(1) System configuration selection
+	(2) Sys: Light source color selection together with wavelength defination
+	(3) Sys: Light Configuration = light port + imaging head cube
+	(4) Sys: Light Monitor Power Meter Configurations
+	(5) Sys: Light Diffuser Options: [0 5 10 15 20]º
+	(6) Sys: Camera Lens Aperture Options: f/[1.9 2.8 4 5.6 8 11 16]
+	(7) Mky: prep options: (intact skull / window)
+	(8) Mky: side & prep are combined into a single 'Toggle' panellete
+	(9) Exp: Depth into a slider: [-1 0 1 2 3 4 5] turns on LT1
+	(10) Exp: Ref_Image Saving recheck for parameter savings
+	(11) Ses: Load with an auto-switch on TrlOrder
+		Xin.D.Trl.Load.SoundNumTotal == 1 ,	'Sequential'
+		Xin.D.Trl.Load.SoundNumTotal >1		'Randomized');
+	(12) Ses: Recording Saving recheck for parameter savings
+	(12) Ses: Frame Available and Frame Acquired are combined into a single 'Edit'
+	(13) Mon: Preview switch and ROI are combined into a single 'Toggle' panellete
+	(14) Mon: Syncrhonized Monitoring Cam Recording:
+		No: 		main camera only
+		Pupil ONLY: 	main camera together with pupillometry
+		Pupil & Body: 	main camera together with pupillometry and body monitoring
+	(15) EnableGUI('inactive') updated
+Recording Controls
+	(1) Cancel session recording in the middle
+	(2) Syncrhonized Monitoring Cam Recording with pupilometry & animal monitoring
+Hardware Controls:
+	(1) Pupillometery is changed from PointGreyCam(3) to PointGreyCam(1) to
+		get together with animal monitor on PointGreyCam([1 2]) for recoridng and
+		leave flexibility for later sCMOS system configurations without initializing PointGreyCam(3)
+	(2) Power Meter @ different modes
+		No Monitor:	No PM signal recorded
+		Slow Updates: 	10Hz updates from USB reading with 15Hz cutoff filter on PM100A
+		Fast Updates: 	100kHz updates from NIDAQ AI recording as before
+	(3) NIDAQ backbone
+		Monitoring Cameras Trigger Tasks added
+		100kHzTimebase output on	RTSI7
+		Start trigger on		RTSI6
+	
 	

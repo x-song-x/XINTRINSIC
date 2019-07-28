@@ -51,8 +51,8 @@ Xin.UI.C = S.Color;
     S.PaneletteTitle = 18;
 
     % Image Scale
-    S.AxesImageHeight =     Xin.D.Sys.PointGreyCam(2).DispHeight;
-    S.AxesImageWidth =      Xin.D.Sys.PointGreyCam(2).DispWidth;
+    S.AxesImageHeight =     Xin.D.Sys.PointGreyCam(3).DispHeight;
+    S.AxesImageWidth =      Xin.D.Sys.PointGreyCam(3).DispWidth;
     S.AxesHistHeight =      256;
     
     % Image Panel Scale
@@ -98,7 +98,7 @@ Xin.UI.C = S.Color;
             'ZLimMode',     'Manual',...
             'CLimMode',     'Manual',...
             'ALimMode',     'Manual');
-        Xin.UI.H0.hImage = imshow(Xin.D.Sys.PointGreyCam(2).DispImg,...
+        Xin.UI.H0.hImage = imshow(Xin.D.Sys.PointGreyCam(3).DispImg,...
             'parent',       Xin.UI.H0.hAxesImage); 
         
         % create the Hist Axes
@@ -117,20 +117,20 @@ Xin.UI.C = S.Color;
             'NextPlot',     'Add',...
             'View',         [90 90],...
             'XColor',       S.Color.FG,...            
-            'XLim',         [1 length(Xin.D.Sys.PointGreyCam(2).DispHistMax)],...
+            'XLim',         [1 length(Xin.D.Sys.PointGreyCam(3).DispHistMax)],...
             'XTick',        [],...
             'YColor',       S.Color.FG,...
             'YGrid',        'On',...
             'YLim',         [0 255],...
             'YTick',        0:32:224,...
             'YTickLabel',   {});
-     	Xin.UI.H0.hHistMax =    plot(Xin.D.Sys.PointGreyCam(2).DispHistMax,     '-',...
+     	Xin.UI.H0.hHistMax =    plot(Xin.D.Sys.PointGreyCam(3).DispHistMax,     '-',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG); 
-     	Xin.UI.H0.hHistMean =   plot(Xin.D.Sys.PointGreyCam(2).DispHistMean,	'.-',...
+     	Xin.UI.H0.hHistMean =   plot(Xin.D.Sys.PointGreyCam(3).DispHistMean,	'.-',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG);                     
-     	Xin.UI.H0.hHistMin =    plot(Xin.D.Sys.PointGreyCam(2).DispHistMin,     '--',...
+     	Xin.UI.H0.hHistMin =    plot(Xin.D.Sys.PointGreyCam(3).DispHistMin,     '--',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG); 
                     
@@ -187,7 +187,7 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'LED ', 'light source'};
         WP.tip = {  'LED ', 'light source'};
-        WP.inputOptions = {'Amber', 'Green', 'Blue'; 'Red', 'FRed', 'NIR'};
+        WP.inputOptions = {Xin.D.Sys.Light.Sources{1:3}; Xin.D.Sys.Light.Sources{4:6}};
         WP.inputDefault = [1, 0];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_LightSource_Toggle1 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
@@ -199,51 +199,119 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
             set(hc(3), 'ForegroundColor', [ 1       1       0   ]);
             set(hc(2), 'ForegroundColor', [ 0       1       0   ]);
             set(hc(1), 'ForegroundColor', [ 0       0       1   ]);
+            set(hc(3), 'UserData',        Xin.D.Sys.Light.Wavelengths(1));
+            set(hc(2), 'UserData',        Xin.D.Sys.Light.Wavelengths(2));
+            set(hc(1), 'UserData',        Xin.D.Sys.Light.Wavelengths(3));
         hc = get(Xin.UI.H.hSys_LightSource_Toggle2, 'Children');
             set(hc(3), 'ForegroundColor', [ 1       0       0   ]);
             set(hc(2), 'ForegroundColor', [ 0.75    0       0   ]);
             set(hc(1), 'ForegroundColor', [ 0.5     0       0   ]);
+            set(hc(3), 'UserData',        Xin.D.Sys.Light.Wavelengths(4));
+            set(hc(2), 'UserData',        Xin.D.Sys.Light.Wavelengths(5));
+            set(hc(1), 'UserData',        Xin.D.Sys.Light.Wavelengths(6));
          
-	WP.name = 'Sys LightPort';
+	WP.name = 'Sys LightConfig';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'RockerSwitch';	
         WP.row      = S.PnltCurrent.row;
         WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'LED light port selection'};
-        WP.tip = {  'LED light port selection'};
-        WP.inputOptions = {'Koehler', 'Ring', ''};
+        WP.text = { 'LED light port + Imaging headcube'};
+        WP.tip = {  'LED light port + Imaging headcube'};
+        WP.inputOptions = {'LtGuide + PBS', 'Koehler + PBS', 'Koehler + GFP'};
         WP.inputDefault = 1;
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hSys_LightPort_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hSys_LightPort_Rocker, 'Tag',  'hSys_LightPort_Rocker');
+        Xin.UI.H.hSys_LightConfig_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
+        set(Xin.UI.H.hSys_LightConfig_Rocker, 'Tag',  'hSys_LightConfig_Rocker');
+        clear WP;
+        hc = get(Xin.UI.H.hSys_LightConfig_Rocker, 'Children');
+        for i = 1:3
+            setappdata(hc(i), 'Port',       Xin.D.Sys.Light.Configs(4-i).Port);
+            setappdata(hc(i), 'HeadCube',	Xin.D.Sys.Light.Configs(4-i).HeadCube);
+        end
+          
+	WP.name = 'Sys LightMonitor';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'RockerSwitch';	
+        WP.row      = S.PnltCurrent.row;
+        WP.column   = S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { 'Power Meter Settings'};
+        WP.tip = {  'Power Meter Settings'};
+        WP.inputOptions = {'No Monitor', 'Slow Updates', 'Fast Updates'};
+        WP.inputDefault = 1;
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hSys_LightMonitor_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
+        set(Xin.UI.H.hSys_LightMonitor_Rocker, 'Tag',  'hSys_LightMonitor_Rocker');
         clear WP;
         
-	WP.name = 'Sys HeadCube';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'RockerSwitch';	
-        WP.row      = S.PnltCurrent.row;
-        WP.column   = S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Imaging head cube selection'};
-        WP.tip = {  'Imaging head cube selection'};
-        WP.inputOptions = {'Pola_PBS', 'Fluo_GFP', 'Fluo_mKO'};
-        WP.inputDefault = 1;
+	WP.name = 'Sys LightDiffuser';
+        WP.handleseed =	'Xin.UI.H0.Panelette';
+        WP.type =       'Potentiometer';	
+        WP.row =        S.PnltCurrent.row;
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;  
+        WP.text = 	{   ['Light diffuser: [', sprintf('%d ', Xin.D.Sys.Light.Diffusers), '] (degree)']};
+        WP.tip =    {   ['Light diffuser: [', sprintf('%d ', Xin.D.Sys.Light.Diffusers), '] (degree)']};
+        WP.inputValue =     Xin.D.Sys.Light.Diffuser;
+        WP.inputRange =     Xin.D.Sys.Light.Diffusers([1 end]);
+        WP.inputSlideStep=  1/(length(Xin.D.Sys.Light.Diffusers)-1)*[1 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hSys_HeadCube_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hSys_HeadCube_Rocker, 'Tag',  'hSys_HeadCube_Rocker');
-        clear WP;     
-
+        Xin.UI.H.hSys_LightDiffuser_PotenSlider =  	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hSys_LightDiffuser_PotenEdit =    	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hSys_LightDiffuser_PotenSlider,'Tag',  'hSys_LightDiffuser_PotenSlider');
+        set(Xin.UI.H.hSys_LightDiffuser_PotenEdit,  'Tag',  'hSys_LightDiffuser_PotenEdit');
+        clear WP;   
+        
+    WP.name = 'Sys CamLensAngle';
+        WP.handleseed =	'Xin.UI.H0.Panelette';
+        WP.type =       'Potentiometer';	
+        WP.row =        S.PnltCurrent.row;
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;  
+        WP.text = 	{	['camera lens angle reading on LCRM2']};
+        WP.tip =    {   'The angle reading on LCRM2',...
+                        'For the right side setup, with NMV-6x16#311383 + GS3-U3-23S6M#15452576',...
+                        'Flat Angle ~= 74degree'};
+        WP.inputRange =     [0 360];
+        WP.inputValue =     Xin.D.Sys.CameraLens.Angle;
+        WP.inputSlideStep=  [1/360 10/360];
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hSys_CameraLensAngle_PotenSlider =	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hSys_CameraLensAngle_PotenEdit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hSys_CameraLensAngle_PotenSlider,	'tag', 'hSys_CameraLensAngle_PotenSlider');
+        set(Xin.UI.H.hSys_CameraLensAngle_PotenEdit,  	'tag', 'hSys_CameraLensAngle_PotenEdit');
+        clear WP;
+        
+	WP.name = 'Sys CamLensAperture';
+        WP.handleseed =	'Xin.UI.H0.Panelette';
+        WP.type =       'Potentiometer';	
+        WP.row =        S.PnltCurrent.row;
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;  
+        WP.text = 	{   ['Lens aperture: f/[', sprintf('%.2g ', Xin.D.Sys.CameraLens.Apertures), ']']};
+        WP.tip =    {   ['Lens aperture: f/[', sprintf('%.2g ', Xin.D.Sys.CameraLens.Aperture), ']']};
+        WP.inputValue =     log10(Xin.D.Sys.CameraLens.Aperture);
+        WP.inputRange =     log10(Xin.D.Sys.CameraLens.Apertures([1 end]));
+        WP.inputSlideStep=  1/(length(Xin.D.Sys.CameraLens.Apertures)-1)*[1 1];
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hSys_CameraLensAperture_PotenSlider =	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hSys_CameraLensAperture_PotenEdit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hSys_CameraLensAperture_PotenSlider,'Tag',  'hSys_CameraLensAperture_PotenSlider');
+        set(Xin.UI.H.hSys_CameraLensAperture_PotenEdit,  'Tag',  'hSys_CameraLensAperture_PotenEdit');
+        set(Xin.UI.H.hSys_CameraLensAperture_PotenEdit,  'Enable',  'off');        
+        clear WP;    
+        
 	WP.name = 'Sys CamShutter';
         WP.handleseed =	'Xin.UI.H0.Panelette';
         WP.type =       'Potentiometer';	
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(2).ShutterRange), '] (ms)']};
-        WP.tip =    {   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(2).ShutterRange), '] (ms)']};
-        WP.inputValue =     Xin.D.Sys.PointGreyCam(2).Shutter;
-        WP.inputRange =     Xin.D.Sys.PointGreyCam(2).ShutterRange;
+        WP.text = 	{   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(3).ShutterRange), '] (ms)']};
+        WP.tip =    {   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(3).ShutterRange), '] (ms)']};
+        WP.inputValue =     Xin.D.Sys.PointGreyCam(3).Shutter;
+        WP.inputRange =     Xin.D.Sys.PointGreyCam(3).ShutterRange;
         WP.inputSlideStep=  [0.01 0.1];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_CamShutter_PotenSlider =  	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
@@ -256,10 +324,10 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(2).GainRange), '] (dB)']};
-        WP.tip =    {   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(2).GainRange), '] (dB)']};
-        WP.inputValue =     Xin.D.Sys.PointGreyCam(2).Gain;
-        WP.inputRange =     Xin.D.Sys.PointGreyCam(2).GainRange;
+        WP.text = 	{   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(3).GainRange), '] (dB)']};
+        WP.tip =    {   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(3).GainRange), '] (dB)']};
+        WP.inputValue =     Xin.D.Sys.PointGreyCam(3).Gain;
+        WP.inputRange =     Xin.D.Sys.PointGreyCam(3).GainRange;
         WP.inputSlideStep=  [0.01 0.1];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_CamGain_PotenSlider =        Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
@@ -272,62 +340,16 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{   ['Cam frame bin: [', sprintf('%d ', Xin.D.Sys.PointGreyCamDispGainNumRange), '] (frames)']};
-        WP.tip =    {   ['Cam frame bin: [', sprintf('%d ', Xin.D.Sys.PointGreyCamDispGainNumRange), '] (frames)']};
-        WP.inputRange =     Xin.D.Sys.PointGreyCamDispGainBitRange;
+        WP.text = 	{   ['Cam frame bin: [', sprintf('%d ', Xin.D.Sys.Camera.DispGainNumRange), '] (frames)']};
+        WP.tip =    {   ['Cam frame bin: [', sprintf('%d ', Xin.D.Sys.Camera.DispGainNumRange), '] (frames)']};
+        WP.inputRange =     Xin.D.Sys.Camera.DispGainBitRange;
         WP.inputSlideStep=  min(diff(WP.inputRange))/sum(diff(WP.inputRange))*[1 1];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_CamDispGain_PotenSlider = Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
         Xin.UI.H.hSys_CamDispGain_PotenEdit =   Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         clear WP;    
-        
-% 	WP.name = 'WhiteBalance R';
-%         WP.handleseed =	'Xin.UI.H0.Panelette';
-%         WP.type =       'Potentiometer';	
-%         WP.row =        S.PnltCurrent.row;
-%         WP.column =     S.PnltCurrent.column;
-%             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-%         WP.text = 	{   'WhiteBalance R'};
-%         WP.tip =    {   'WhiteBalance R'};
-%         WP.inputValue =     CameraD.WhiteBalanceRB_Default(1);
-%         WP.inputRange =     CameraD.WhiteBalanceRB_Range;
-%         WP.inputSlideStep=  [0.01 0.1];
-%         Panelette(S, WP, 'Xin');
-%         Xin.UI.H.hSys_CamWhiteBalanceR_PotenSlider = 	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
-%         Xin.UI.H.hSys_CamWhiteBalanceR_PotenEdit =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-%         clear WP;
-%         
-% 	WP.name = 'WhiteBalance B';
-%         WP.handleseed =	'Xin.UI.H0.Panelette';
-%         WP.type =       'Potentiometer';	
-%         WP.row =        S.PnltCurrent.row;
-%         WP.column =     S.PnltCurrent.column;
-%             S.PnltCurrent.column = S.PnltCurrent.column + 1;   
-%         WP.text = 	{   'WhiteBalance B'};
-%         WP.tip =    {   'WhiteBalance B'};
-%         WP.inputValue =     CameraD.WhiteBalanceRB_Default(2);
-%         WP.inputRange =     CameraD.WhiteBalanceRB_Range;
-%         WP.inputSlideStep=  [0.01 0.1];
-%         Panelette(S, WP, 'Xin');
-%         Xin.UI.H.hSys_CamWhiteBalanceB_PotenSlider = 	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
-%         Xin.UI.H.hSys_CamWhiteBalanceB_PotenEdit =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-%         clear WP;
-% 
-% 	WP.name = 'WhiteBalanceMode';
-%         WP.handleseed = 'Xin.UI.H0.Panelette';
-%         WP.type = 'RockerSwitch';	
-%         WP.row      = S.PnltCurrent.row;
-%         WP.column   = S.PnltCurrent.column;
-%             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-%         WP.text = { 'White Balance RB Mode'};
-%         WP.tip = {  'White Balance RBMode'};
-%         WP.inputOptions = {'Manual', 'Off', ''};
-%         WP.inputDefault = 1;
-%         Panelette(S, WP, 'Xin');
-%         Xin.UI.H.hSys_CamWhiteBalanceRB_Mode_Rocker =        Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-%         clear WP; 
  
-S.PnltCurrent.row = 3;      S.PnltCurrent.column = 8;     
+S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;     
 	WP.name = 'Mky Monkey#';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'ToggleSwitch';	
@@ -345,93 +367,70 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 8;
         set(Xin.UI.H.hMky_ID_Toggle2, 'Tag',    'hMky_ID_Toggle2');
         clear WP;
         
-	WP.name = 'Mky Side';
+	WP.name = 'Mky Side & Prep';
         WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'RockerSwitch';	
+        WP.type = 'ToggleSwitch';	
         WP.row      = S.PnltCurrent.row;
         WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'LEFT or RIHGT hemesphere'};
-        WP.tip = {  'LEFT or RIHGT hemesphere'};
-        WP.inputOptions = Xin.D.Mky.Lists.Side;
-        WP.inputDefault = 1;
+        WP.text = { 'Side: left/right', 'Prep: win/intact'};
+        WP.tip = {  'Side / Hemisphere', 'Preperation: Window or Intact Skull'};
+        WP.inputOptions = [Xin.D.Mky.Lists.Side; Xin.D.Mky.Lists.Prep];
+        WP.inputDefault = [1, 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hMky_Side_Rocker =     Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hMky_Side_Rocker,  'Tag',  'hMky_Side_Rocker');
-        clear WP;  
+        Xin.UI.H.hMky_Side_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
+        Xin.UI.H.hMky_Prep_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
+        set(Xin.UI.H.hMky_Side_Rocker, 'Tag',    'hMky_Side_Rocker');
+        set(Xin.UI.H.hMky_Prep_Rocker, 'Tag',    'hMky_Prep_Rocker');
+        clear WP;
+
+S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;        
+  	WP.name = 'Exp Ref_Image';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'MomentarySwitch'; 
+        WP.row =        S.PnltCurrent.row;         
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { 'Take a reference image for the Experiment',...
+                    ['Experiment date: ', Xin.D.Exp.DateStr]};
+        WP.tip = {[ 'Take a reference image for the Experiment',...
+                    ''],...
+                  [ 'Experiment date: ', Xin.D.Exp.DateStr] };
+        WP.inputEnable = {'on','off'};
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hExp_RefImage_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1}; 
+        set(Xin.UI.H.hExp_RefImage_Momentary,	'tag', 'hExp_RefImage_Momentary');
+        clear WP;         
         
-    WP.name = 'Exp Angle';
+    WP.name = 'Exp Depth';
         WP.handleseed =	'Xin.UI.H0.Panelette';
         WP.type =       'Potentiometer';	
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{	['The angle reading on LCRM2']};
-        WP.tip =    {   'The angle reading on LCRM2',...
-                        'For the right side setup, with NMV-6x16#311383 + GS3-U3-23S6M#15452576',...
-                        'Flat Angle ~= 74degree'};
-        WP.inputRange =     [0 360];
-        WP.inputValue =     Xin.D.Exp.Angle;
-        WP.inputSlideStep=  [1/360 10/360];
+        WP.text = 	{	['Focal depth: (in LT1 fine turns)']};
+        WP.tip =    {   'Focal depth: \n(in LT1 fine turns)'};
+        WP.inputRange =     Xin.D.Exp.Depths([1 end]);
+        WP.inputValue =     Xin.D.Exp.Depth;
+        WP.inputSlideStep=  1/(Xin.D.Exp.Depths(end)-Xin.D.Exp.Depths(1))*[1 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hExp_Angle_PotenSlider = Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
-        Xin.UI.H.hExp_Angle_PotenEdit =   Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-        set(Xin.UI.H.hExp_Angle_PotenSlider,	'tag', 'hExp_Angle_PotenSlider');
-        set(Xin.UI.H.hExp_Angle_PotenEdit,  	'tag', 'hExp_Angle_PotenEdit');
-        clear WP;   
-
-S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;        
-  	WP.name = 'Exp RefImage';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'MomentarySwitch'; 
-        WP.row =        S.PnltCurrent.row;         
-        WP.column =     S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Take a reference image for the experiment',...
-                    ''};
-        WP.tip = {[ 'Take a reference image for the experiment',...
-                    ''],...
-                  [ 'Take a reference image for the experiment',...
-                    ''] };
-        WP.inputEnable = {'on','off'};
-        Panelette(S, WP, 'Xin');
-        Xin.UI.H.hExp_RefImage_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1}; 
-        set(Xin.UI.H.hExp_RefImage_Momentary,	'tag', 'hExp_RefImage_Momentary');
-        clear WP;        
+        Xin.UI.H.hExp_Depth_PotenSlider =	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hExp_Depth_PotenEdit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hExp_Depth_PotenSlider,	'tag', 'hExp_Depth_PotenSlider');
+        set(Xin.UI.H.hExp_Depth_PotenEdit,  	'tag', 'hExp_Depth_PotenEdit');
+        clear WP;      
         
-	WP.name = 'Exp Time&Depth';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type =       'Edit';          
-        WP.row =        S.PnltCurrent.row;         
-        WP.column =     S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = {	'Depth \n(in LT1 fine turns)',...
-                    'Experiment date [yymmdd-HH]'};
-        WP.tip = WP.text; 
-        WP.inputValue = {   Xin.D.Exp.Depth,...
-                            Xin.D.Exp.DateStr};    
-        WP.inputFormat = {'%5.2f','%s'};
-        WP.inputEnable = {'on','off'};
-        Panelette(S, WP, 'Xin');    
-        Xin.UI.H.hExp_Depth_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-        Xin.UI.H.hExp_Date_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
-        set(Xin.UI.H.hExp_Depth_Edit,	'tag', 'hExp_Depth_Edit');
-        set(Xin.UI.H.hExp_Date_Edit,	'tag', 'hExp_Date_Edit');
-        clear WP;  
-               
-S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
-	WP.name = 'Ses Load&Start';
+S.PnltCurrent.row = 2;      S.PnltCurrent.column = 4;
+	WP.name = 'Ses Load & Start';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'MomentarySwitch'; 
         WP.row =        S.PnltCurrent.row;         
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Load SOUND for the session',...
-                    'Start the session'};
-        WP.tip = {[ 'Load SOUND for the session',...
-                    'Start the session'],...
-                  [ 'Load SOUND for the session',...
-                    'Start the session'] };
+        WP.text = { 'LOAD SOUND for the session',...
+                    'START a session, or CANCEL a                   session'};
+        WP.tip = {	'LOAD SOUND for the session',...
+                  	'START a session, or CANCEL a session' };
         WP.inputEnable = {'on','off'};
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSes_Load_Momentary =      Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1}; 
@@ -448,7 +447,7 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'Trial Order'};
         WP.tip = {  'Trial Order'};
-        WP.inputOptions = {'Sequential', 'Randomized', ''};
+        WP.inputOptions = {'Sequential', 'Randomized', 'Pre-arranged'};
         WP.inputDefault = 1;
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSes_TrlOrder_Rocker =	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
@@ -574,60 +573,24 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         set(Xin.UI.H.hSes_CamTrigger_Rocker,  'Tag',  'hSes_CamTrigger_Rocker');
         clear WP; 
         
-  	WP.name = 'Ses Frame#1';
+  	WP.name = 'Ses Frame #';
         WP.handleseed =	'Xin.UI.H0.Panelette';
         WP.type = 'Edit';           
         WP.row      = S.PnltCurrent.row;
         WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;     
-        WP.text = {	'Frame Available (frames)',...
+        WP.text = {	'Frame Available) Frame Acquired (frames)',...
                     'Frame SesTotal (frames)'};
-        WP.tip = {	'Frame Available (frames)',...
+        WP.tip = {	'Frame Available / Frame Acquired (frames)',...
                     'Frame SesTotal (frames)'};
-        WP.inputValue = {   Xin.D.Ses.FrameAcquired,...
+        WP.inputValue = {   [Xin.D.Ses.FrameAvailable Xin.D.Ses.FrameAcquired],...
                             Xin.D.Ses.FrameTotal};
-        WP.inputFormat = {'%d','%d'};    
+        WP.inputFormat = {'%d)%d','%d'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
         Xin.UI.H.hSes_FrameAcquired_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         Xin.UI.H.hSes_FrameTotal_Edit =     Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2}; 
         clear WP;        
-        
-  	WP.name = 'Ses Frame#2';
-        WP.handleseed =	'Xin.UI.H0.Panelette';
-        WP.type = 'Edit';           
-        WP.row      = S.PnltCurrent.row;
-        WP.column   = S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;     
-        WP.text = {	'Frame Available (frames)',...
-                    ''};
-        WP.tip = {	'Frame Available (frames)',...
-                    ''};
-        WP.inputValue = {   Xin.D.Ses.FrameAvailable,...
-                            ''};
-        WP.inputFormat = {'%d','%s'};    
-        WP.inputEnable = {'off','off'};
-        Panelette(S, WP, 'Xin');    
-        Xin.UI.H.hSes_FrameAvailable_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
-        clear WP;     
-        
-	WP.name = 'Ses Stop';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'MomentarySwitch'; 
-        WP.row =        S.PnltCurrent.row;         
-        WP.column =     S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { '',...
-                    'Stop the seesion'};
-        WP.tip = {[ '',...
-                    'Stop the seesion'],...
-                  [ '',...
-                    'Stop the session'] };
-        WP.inputEnable = {'off','on'};
-        Panelette(S, WP, 'Xin');
-        Xin.UI.H.hSes_Stop_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
-        set(Xin.UI.H.hSes_Stop_Momentary,	'tag', 'hSes_Start_Momentary');
-        clear WP; 
         
 S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;  
   	WP.name = 'Trl Number';
@@ -757,21 +720,32 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
         set(Xin.UI.H.hTrl_DurTotal_Edit,	'Tag', 'hTrl_DurTotal_Edit');
         clear WP;   
         
-S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;        
-     WP.name = 'Mon PreviewSwt';
-        WP.handleseed =	'Xin.UI.H0.Panelette';
-        WP.type =       'RockerSwitch';	
-        WP.row =        S.PnltCurrent.row;
-        WP.column =     S.PnltCurrent.column;
+S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8; 
+
+        
+	WP.name = 'Mon PreviewDisp';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'ToggleSwitch';	
+        WP.row      = S.PnltCurrent.row;
+        WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text =   {   'Preview Switch'};
-        WP.tip =    {   'Preview Switch'};
-        WP.inputOptions = {'Preview ON', 'Preview OFF', ''};
-        WP.inputDefault = 2;
+        WP.text = { 'Preview Switch', 'Display ROI'};
+        WP.tip = {  'Preview Switch',...
+                    [   'Display ROI mode:\n',...
+                        '\tDisplay full FOV;\n',...
+                        '\tDisplay the ROI;\n',...
+                        '\tDraw ROI.'] };
+        WP.inputOptions = {	'ON', 'OFF', '';...
+                            'Full', 'ROI', 'Draw'};
+        WP.inputDefault = [1, 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hMon_PreviewSwitch_Rocker = Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
+        Xin.UI.H.hMon_PreviewSwitch_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
+        Xin.UI.H.hVol_DisplayMode_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
         set(Xin.UI.H.hMon_PreviewSwitch_Rocker, 'Tag', 'hMon_PreviewSwitch_Rocker');
-        clear WP;  
+        set(Xin.UI.H.hVol_DisplayMode_Rocker,   'Tag',   'hVol_DisplayMode_Rocker');
+        clear WP;
+        hc = get(Xin.UI.H.hVol_DisplayMode_Rocker, 'children');
+        set(hc(2), 'Enable', 'inactive');
         
   	WP.name = 'Mon CamPrevPara';
         WP.handleseed =	'Xin.UI.H0.Panelette';
@@ -783,8 +757,8 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
                     'Previewing TimeStamp [HH:MM:SS.S]'};
         WP.tip = {	'Previewing frame rate',...
                     'Previewing TimeStamp [HH:MM:SS.S]'};
-        WP.inputValue = {   Xin.D.Sys.PointGreyCam(2).PreviewStrFR,...
-                            Xin.D.Sys.PointGreyCam(2).PreviewStrTS};
+        WP.inputValue = {   Xin.D.Sys.PointGreyCam(3).PreviewStrFR,...
+                            Xin.D.Sys.PointGreyCam(3).PreviewStrTS};
         WP.inputFormat = {'%s','%s'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
@@ -792,23 +766,7 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
         Xin.UI.H.hVol_CamPreviewTS_Edit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{2};
         set(Xin.UI.H.hVol_CamPreviewFR_Edit, 'tag', 'hVol_CamPreviewFR_Edit');
         set(Xin.UI.H.hVol_CamPreviewTS_Edit, 'tag', 'hVol_CamPreviewTS_Edit');
-        clear WP;
-        
-    WP.name = 'Mon DisplayMode';
-        WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'RockerSwitch';	
-        WP.row      = S.PnltCurrent.row;
-        WP.column   = S.PnltCurrent.column;
-            S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Display Mode'};
-        WP.tip = {  'Display Mode'};
-        WP.inputOptions = { 'Disp Full',	'Disp ROI',     'Draw ROI'};
-        WP.inputDefault = 1;
-        WP.inputEnable = {  'on',           'inactive',     'on'};
-        Panelette(S, WP, 'Xin');
-        Xin.UI.H.hVol_DisplayMode_Rocker =	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hVol_DisplayMode_Rocker,   'Tag',   'hVol_DisplayMode_Rocker');
-        clear WP;   
+        clear WP; 
         
   	WP.name = 'Mon Animal';
         WP.handleseed = 'Xin.UI.H0.Panelette';
@@ -816,47 +774,63 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
         WP.row =        S.PnltCurrent.row;         
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Animal Monitor',...
-                    'Pupillometry'};
-        WP.tip = {[ 'Animal Monitor',...
-                    'Pupillometry'],...
-                  [ 'Monitoring animal''s condition',...
-                    'Pupillometry'] };
+        WP.text = { 'Pupillometry',...
+                    'Animal Monitor'};
+        WP.tip = {[ 'Pupillometry',...
+                    'Animal Monitor'],...
+                  [ 'Pupillometry',...
+                    'Monitoring animal''s condition'] };
         WP.inputEnable = {'on','on'};
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hMon_AnimalMon_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1};
-        Xin.UI.H.hMon_Pupillometry_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
-        set(Xin.UI.H.hMon_AnimalMon_Momentary,      'tag', 'hMon_AnimalMon_Momentary');
+        Xin.UI.H.hMon_Pupillometry_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1};
+        Xin.UI.H.hMon_AnimalMon_Momentary =     Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2};
         set(Xin.UI.H.hMon_Pupillometry_Momentary,	'tag', 'hMon_Pupillometry_Momentary');
-        set(Xin.UI.H.hMon_AnimalMon_Momentary,      'UserData', 1');
-        set(Xin.UI.H.hMon_Pupillometry_Momentary,	'UserData', 3');
+        set(Xin.UI.H.hMon_AnimalMon_Momentary,      'tag', 'hMon_AnimalMon_Momentary');
+        set(Xin.UI.H.hMon_Pupillometry_Momentary,	'UserData', 1');
+        set(Xin.UI.H.hMon_AnimalMon_Momentary,      'UserData', 2');
         clear WP;  
+       
+	WP.name = 'Mon SyncRec';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'RockerSwitch';	
+        WP.row      = S.PnltCurrent.row;
+        WP.column   = S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { 'Synchronized MonCam recording'};
+        WP.tip = {  [   'Synchronized Monitoring Cameras recording\n'...
+                        'including both Animal Monitor & Pupillometry']};
+        WP.inputOptions = {'NO', 'Pupil ONLY', 'Pupil & Body'};
+        WP.inputDefault = 1;
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hMon_SyncRec_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
+        set(Xin.UI.H.hMon_SyncRec_Rocker, 'Tag',  'hMon_SyncRec_Rocker');
+        clear WP;
         
-Xin.UI.FigPGC(2).hImage =                       Xin.UI.H0.hImage;
-Xin.UI.FigPGC(2).hImageHide =                   Xin.UI.H0.hImageHide;
-Xin.UI.FigPGC(2).CP.hMon_CamPreviewFR_Edit =    Xin.UI.H.hVol_CamPreviewFR_Edit;
-Xin.UI.FigPGC(2).CP.hMon_CamPreviewTS_Edit =    Xin.UI.H.hVol_CamPreviewTS_Edit;
-Xin.UI.FigPGC(2).hHistMax =                     Xin.UI.H0.hHistMax;
-Xin.UI.FigPGC(2).hHistMean =                    Xin.UI.H0.hHistMean; 
-Xin.UI.FigPGC(2).hHistMin =                     Xin.UI.H0.hHistMin; 
-Xin.UI.FigPGC(2).CP.hSys_CamShutter_PotenSlider =   Xin.UI.H.hSys_CamShutter_PotenSlider;
-Xin.UI.FigPGC(2).CP.hSys_CamShutter_PotenEdit =     Xin.UI.H.hSys_CamShutter_PotenEdit;
-Xin.UI.FigPGC(2).CP.hSys_CamGain_PotenSlider =      Xin.UI.H.hSys_CamGain_PotenSlider;
-Xin.UI.FigPGC(2).CP.hSys_CamGain_PotenEdit =        Xin.UI.H.hSys_CamGain_PotenEdit;
-Xin.UI.FigPGC(2).CP.hSys_CamDispGain_PotenSlider =	Xin.UI.H.hSys_CamDispGain_PotenSlider;
-Xin.UI.FigPGC(2).CP.hSys_CamDispGain_PotenEdit =	Xin.UI.H.hSys_CamDispGain_PotenEdit;
-Xin.UI.FigPGC(2).CP.hExp_RefImage_Momentary =       Xin.UI.H.hExp_RefImage_Momentary;
-Xin.UI.FigPGC(2).CP.hSes_CamTrigger_Rocker =        Xin.UI.H.hSes_CamTrigger_Rocker;
-Xin.UI.FigPGC(2).CP.hMon_PreviewSwitch_Rocker =     Xin.UI.H.hMon_PreviewSwitch_Rocker;
-set(Xin.UI.FigPGC(2).CP.hSys_CamShutter_PotenSlider,	'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSys_CamShutter_PotenEdit,    	'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSys_CamGain_PotenSlider,     	'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSys_CamGain_PotenEdit,      	'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSys_CamDispGain_PotenSlider,	'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSys_CamDispGain_PotenEdit,     'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hExp_RefImage_Momentary,        'UserData',	2);
-set(Xin.UI.FigPGC(2).CP.hSes_CamTrigger_Rocker,         'UserData', 2);
-set(Xin.UI.FigPGC(2).CP.hMon_PreviewSwitch_Rocker,      'UserData', 2);
+Xin.UI.FigPGC(3).hImage =                       Xin.UI.H0.hImage;
+Xin.UI.FigPGC(3).hImageHide =                   Xin.UI.H0.hImageHide;
+Xin.UI.FigPGC(3).CP.hMon_CamPreviewFR_Edit =    Xin.UI.H.hVol_CamPreviewFR_Edit;
+Xin.UI.FigPGC(3).CP.hMon_CamPreviewTS_Edit =    Xin.UI.H.hVol_CamPreviewTS_Edit;
+Xin.UI.FigPGC(3).hHistMax =                     Xin.UI.H0.hHistMax;
+Xin.UI.FigPGC(3).hHistMean =                    Xin.UI.H0.hHistMean; 
+Xin.UI.FigPGC(3).hHistMin =                     Xin.UI.H0.hHistMin; 
+Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider =   Xin.UI.H.hSys_CamShutter_PotenSlider;
+Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit =     Xin.UI.H.hSys_CamShutter_PotenEdit;
+Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider =      Xin.UI.H.hSys_CamGain_PotenSlider;
+Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit =        Xin.UI.H.hSys_CamGain_PotenEdit;
+Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider =	Xin.UI.H.hSys_CamDispGain_PotenSlider;
+Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit =	Xin.UI.H.hSys_CamDispGain_PotenEdit;
+Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary =       Xin.UI.H.hExp_RefImage_Momentary;
+Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker =        Xin.UI.H.hSes_CamTrigger_Rocker;
+Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker =     Xin.UI.H.hMon_PreviewSwitch_Rocker;
+set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider,	'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit,    	'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider,     	'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit,      	'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider,	'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit,     'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary,        'UserData',	3);
+set(Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker,         'UserData', 3);
+set(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker,      'UserData', 3);
 
 %% Turn the JAVA LookAndFeel Scheme on "Windows"
 %     javax.swing.UIManager.setLookAndFeel('com.sun.java.swing.plaf.windows.WindowsLookAndFeel');

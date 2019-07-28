@@ -18,6 +18,8 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
     if c~= Xin.D.Ses.Load.CycleNumCurrent && c<=Xin.D.Ses.Load.CycleNumTotal % && c
         % Cycle Update: (c changed & c<=CNT)
         Xin.D.Ses.Load.CycleNumCurrent =    c;
+        if c>1      % here is the best place to callback any cycle based stimulus control
+        end
         set(Xin.UI.H.hSes_CycleNumCurrent_Edit,'string',	num2str(Xin.D.Ses.Load.CycleNumCurrent));
         msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tupdateTrial\tCycle # is ' num2str(c) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
@@ -28,7 +30,7 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
         Xin.D.Trl.Load.DurCurrent =      Xin.D.Trl.Load.DurTotal;
         set(Xin.UI.H.hTrl_DurCurrent_Edit,	'string',   sprintf('%5.1f', Xin.D.Trl.Load.DurCurrent));
     elseif t ~= Xin.D.Trl.Load.NumCurrent 
-        % Trial update: (t changed & session not ended) 
+        % Trial update: (t changed & session not ended)         
         Xin.D.Trl.Load.NumCurrent =      t;
         tt =                        (c-1)*Xin.D.Trl.Load.NumTotal + t; % # of total trl played
         stimnum =                   Xin.D.Ses.Load.TrlOrderVec(tt);

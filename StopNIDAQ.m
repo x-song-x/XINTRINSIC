@@ -8,21 +8,17 @@ import dabs.ni.daqmx.*
 %% import handles and data
 global Xin
 
-
 %% Stop tasks
-Xin.HW.NI.T.hTask_CO_TrigStart.stop();
+Xin.HW.NI.T.hTask_CO_TrigStart.abort();
 Xin.HW.NI.T.hTask_CO_TrigStart.delete();
 
-Xin.HW.NI.T.hTask_CO_TrigFrame.stop();
+Xin.HW.NI.T.hTask_CO_TrigFrame.abort();
 Xin.HW.NI.T.hTask_CO_TrigFrame.delete();
 
-% Xin.HW.NI.T.hTask_CO_TrigUpdate.stop();
-% Xin.HW.NI.T.hTask_CO_TrigUpdate.delete();
-
-Xin.HW.NI.T.hTask_AO_Xin.stop();
+Xin.HW.NI.T.hTask_AO_Xin.abort();
 Xin.HW.NI.T.hTask_AO_Xin.delete();
 
-Xin.HW.NI.T.hTask_AI_Xin.stop();
+Xin.HW.NI.T.hTask_AI_Xin.abort();
 Xin.HW.NI.T.hTask_AI_Xin.delete();
 
 %% LOG MSG

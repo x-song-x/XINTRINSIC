@@ -14,7 +14,7 @@ elseif ischar(varargin{1})  % INVOKE NAMED SUBFUNCTION OR CALLBACK
                             % FEVAL switchyard, w/o output  
         end
     catch MException
-        rethrow(MException);
+        rethrow(MException); 
     end
 end
    
@@ -33,46 +33,75 @@ global Xin;
 %% INITIALIZATION
 Xin.D.Sys.Name =        mfilename;          % Grab the current script's name
 SetupD;                                     % Initiate parameters
-% [indx,tf] = listdlg(    'PromptString',     'Select a system configuration',...
-%                         'SelectionMode',    'single',...
-%                         'ListString',       fn);
-
-SetupThorlabsPowerMeters('Xin');
+[idx,tf] = listdlg(	'ListString',       Xin.D.Sys.Configurations.SystemOptionName,...
+                	'SelectionMode',    'single',...
+                    'ListSize',         [350 80],...
+                    'InitialValue',     2,...
+                    'Name',             'XINTRINSIC System Configuration',...
+                    'PromptString',     'Select a system configuration');
+if tf == 0
+    idx = 2;    % the Xin 2.0
+end
+switch Xin.D.Sys.Configurations.CameraDriver{idx}
+    case 'PointGrey'
+        Xin.D.Sys.PointGreyCam(3).SerialNumber = ...
+            Xin.D.Sys.Configurations.CameraSerialNumber{idx};
+%     case 'Thorlabs'
+    otherwise
+        errordlg('Camera Brand Not Supported Yet!')
+        clear global;
+        return
+end                   
 SetupPointGreyCams;
 SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');
-    CtrlPointGreyCams('InitializeCallbacks', 2);     
-    CtrlPointGreyCams('Cam_Shutter',	2, Xin.D.Sys.PointGreyCam(2).Shutter);
-  	CtrlPointGreyCams('Cam_Gain',       2, Xin.D.Sys.PointGreyCam(2).Gain); 
-    CtrlPointGreyCams('Cam_DispGain',	2, Xin.D.Sys.PointGreyCam(2).DispGainNum);  
+    CtrlPointGreyCams('InitializeCallbacks', 3);     
+    CtrlPointGreyCams('Cam_Shutter',	3, Xin.D.Sys.PointGreyCam(3).Shutter);
+  	CtrlPointGreyCams('Cam_Gain',       3, Xin.D.Sys.PointGreyCam(3).Gain); 
+    CtrlPointGreyCams('Cam_DispGain',	3, Xin.D.Sys.PointGreyCam(3).DispGainNum);  
                                 set( Xin.UI.H0.hFig,	'Visible',  'on');    	
 pause(0.5);    
-  	CtrlPointGreyCams('Preview_Switch', 2, 'ON');   
-hc =   get(Xin.UI.FigPGC(2).CP.hMon_PreviewSwitch_Rocker, 'Children');
+  	CtrlPointGreyCams('Preview_Switch', 3, 'ON');   
+hc =   get(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker, 'Children');
 for i = 1:3
     set(hc(i), 'Enable',    'inactive');
 end
  
 %% SETUP GUI CALLBACKS
-set(Xin.UI.H0.hFig,	'CloseRequestFcn',      [Xin.D.Sys.Name,'(''Cam_CleanUp'')']);
+set(Xin.UI.H0.hFig,                     'CloseRequestFcn',      [Xin.D.Sys.Name, '(''Cam_CleanUp'')']);
 set(Xin.UI.H.hSys_LightSource_Toggle1,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hSys_LightSource_Toggle2,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
-set(Xin.UI.H.hSys_LightPort_Rocker,     'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
-set(Xin.UI.H.hSys_HeadCube_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hSys_LightConfig_Rocker,   'SelectionChangeFcn',	[Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hSys_LightMonitor_Rocker,  'SelectionChangeFcn',	[Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hSys_LightDiffuser_PotenSlider,	'Callback',     [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hSys_LightDiffuser_PotenEdit,      'Callback',     [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hSys_CameraLensAngle_PotenSlider,	'Callback',     [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hSys_CameraLensAngle_PotenEdit,	'Callback',     [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hSys_CameraLensAperture_PotenSlider,	'Callback', [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hSys_CameraLensAperture_PotenEdit,     'Callback', [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hMky_ID_Toggle1,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_ID_Toggle2,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_Side_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
-set(Xin.UI.H.hExp_Angle_PotenSlider,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
-set(Xin.UI.H.hExp_Angle_PotenEdit,      'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
-set(Xin.UI.H.hExp_Depth_Edit,           'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
+set(Xin.UI.H.hMky_Prep_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hExp_Depth_PotenSlider,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hExp_Depth_PotenEdit,      'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hSes_CycleNumTotal_Edit,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_AddAtts_Edit,         'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_TrlOrder_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hSes_Load_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Load'')']);
 set(Xin.UI.H.hSes_Start_Momentary,      'Callback',             [Xin.D.Sys.Name, '(''Ses_Start'')']);
-set(Xin.UI.H.hSes_Stop_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Stop'')']);
 set(Xin.UI.H.hVol_DisplayMode_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 set(Xin.UI.H.hMon_Pupillometry_Momentary,'callback',            [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
+set(Xin.UI.H.hMon_SyncRec_Rocker,       'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+
+GUI_Toggle( 'hSys_LightSource_Toggle',      'Green');
+GUI_Rocker( 'hSys_LightConfig_Rocker',      'Koehler + PBS');
+GUI_Poten(	'hSys_LightDiffuser_Poten',     Xin.D.Sys.Light.Diffuser);
+GUI_Poten(	'hSys_CameraLensAngle_Poten',   Xin.D.Sys.CameraLens.Angle);
+GUI_Poten(	'hSys_CameraLensAperture_Poten',Xin.D.Sys.CameraLens.Aperture);
+GUI_Rocker( 'hMky_Side_Rocker',             Xin.D.Mky.Side);
+GUI_Rocker( 'hMky_Prep_Rocker',             Xin.D.Mky.Prep);
+GUI_Poten(	'hExp_Depth_Poten',             Xin.D.Exp.Depth);
 
 %% CALLBACK FUNCTIONS
 function flag = CheckRunning
@@ -137,36 +166,55 @@ function GUI_Rocker(varargin)
         label =     get(gcbo,'Tag'); 
         val =       get(get(gcbo,'SelectedObject'),'string');
     else
-        % called by general update: GUI_Rocker('hSys_LightPort_Rocker', 'Koehler')
+        % called by general update: GUI_Rocker('hSys_LightConfig_Rocker', 'Koehler + PBS')
         label =     varargin{1};
         val =       varargin{2};
     end   
     %% Update GUI
     eval(['h = Xin.UI.H.', label ';'])
     hc = get(h,     'Children');
+            js = 0;
     for j = 1:3
         if strcmp( get(hc(j), 'string'), val )
+            js = j;  % for later reference 
             set(hc(j),	'backgroundcolor', Xin.UI.C.SelectB);
             set(h,      'SelectedObject',  hc(j));
-            k = j;  % for later reference
         else                
             set(hc(j),	'backgroundcolor', Xin.UI.C.TextBG);
         end
     end
     %% Update D & Log
     switch label
-        case 'hSys_LightPort_Rocker'
-            Xin.D.Sys.Light.Port = val;    
-            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_LightPort\tSetup the light port as: '...
-                Xin.D.Sys.Light.Port '\r\n'];
-        case 'hSys_HeadCube_Rocker'
-            Xin.D.Sys.Light.HeadCube = val;
-            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_LightHeadCube\tSetup the light head cube as: '...
-                Xin.D.Sys.Light.HeadCube '\r\n'];
+        case 'hSys_LightConfig_Rocker'
+            Xin.D.Sys.Light.Port =      getappdata(hc(js),  'Port');    
+            Xin.D.Sys.Light.HeadCube =	getappdata(hc(js),  'HeadCube');
+            hcc = get(Xin.UI.H.hSys_LightMonitor_Rocker,    'children');
+            switch Xin.D.Sys.Light.Port
+                case 'LtGuide'
+                    GUI_Rocker('hSys_LightMonitor_Rocker', 'No Monitor');
+                    set(hcc(1), 'Enable',   'inactive');
+                    set(hcc(2), 'Enable',   'inactive');
+                case 'Koehler'
+                    GUI_Rocker('hSys_LightMonitor_Rocker', 'No Monitor');
+                    set(hcc(1), 'Enable',   'on');
+                    set(hcc(2), 'Enable',   'on');
+                otherwise
+                    disp('Light port not recognized!')
+            end
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF'), '\tSys_LightConfig\tSetup the light Port & HeadCube as: ', ...
+                Xin.D.Sys.Light.Port, ' & ', Xin.D.Sys.Light.HeadCube, '\r\n'];
+        case 'hSys_LightMonitor_Rocker'
+            Xin.D.Sys.Light.Monitoring =   val(1);
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_LightMonitor\tSetup the Light Monitoring Mode as: '...
+                Xin.D.Sys.Light.Monitoring '\r\n'];
         case 'hMky_Side_Rocker'
             Xin.D.Mky.Side = val;
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMky_Side\tSetup the Monkey Side as: '...
                 Xin.D.Mky.Side '\r\n'];
+        case 'hMky_Prep_Rocker'
+            Xin.D.Mky.Prep = val;
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMky_Prep\tSetup the Monkey Prep as: '...
+                Xin.D.Mky.Prep '\r\n'];
         case 'hSes_TrlOrder_Rocker'
             Xin.D.Ses.Load.TrlOrder = val;
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_TrlOrder\tSession trial order selected as: '...
@@ -174,23 +222,53 @@ function GUI_Rocker(varargin)
             % Setup Session Loading
             SetupSesLoad('Xin', 'TrlOrder');
         case 'hVol_DisplayMode_Rocker'
-            switch k
+            switch js
                 case 1          % Draw ROI
                     axes(Xin.UI.H0.hAxesImage);
-                    Xin.D.Sys.PointGreyCam(2).ROI =     roipoly;    
-                    Xin.D.Sys.PointGreyCam(2).ROIi =    uint8(Xin.D.Sys.PointGreyCam(2).ROI);
+                    Xin.D.Sys.PointGreyCam(3).ROI =     roipoly;    
+                    Xin.D.Sys.PointGreyCam(3).ROIi =    uint8(Xin.D.Sys.PointGreyCam(3).ROI);
                     set(hc(2), 'Enable', 'on'); 
+                    GUI_Rocker('hVol_DisplayMode_Rocker', 'ROI');
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_SurROI\tExperiment surface ROI circled\r\n'];
                 case 2          % Disp ROI
-                    Xin.D.Sys.PointGreyCam(2).PreviewClipROI = 1;
+                    Xin.D.Sys.PointGreyCam(3).PreviewClipROI = 1;
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as"' ...
-                        num2str(Xin.D.Sys.PointGreyCam(2).PreviewClipROI) '"\r\n'];
+                        num2str(Xin.D.Sys.PointGreyCam(3).PreviewClipROI) '"\r\n'];
                 case 3          % Disp Full
-                    Xin.D.Sys.PointGreyCam(2).PreviewClipROI = 0;
+                    Xin.D.Sys.PointGreyCam(3).PreviewClipROI = 0;
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as"' ...
-                        num2str(Xin.D.Sys.PointGreyCam(2).PreviewClipROI) '"\r\n'];
+                        num2str(Xin.D.Sys.PointGreyCam(3).PreviewClipROI) '"\r\n'];
                 otherwise
             end 
+        case 'hMon_SyncRec_Rocker'
+            switch val
+                case 'No'
+                        Xin.D.Ses.MonitoringCams =  0;
+                case 'Pupil ONLY'
+                    if      ~isfield(Xin.UI.FigPGC(1), 'hFig'); SetupFigurePointGrey(1);
+                    elseif   isempty(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
+                    elseif  ~isvalid(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
+                    end 
+                    warndlg([   'This will allow the following recording sessions to record ',...
+                                'Pupillometry camera synchronized with the ',...
+                                'main camera as well']);
+                 	Xin.D.Ses.MonitoringCams =  1;
+                case 'Pupil & Body'   
+                    if      ~isfield(Xin.UI.FigPGC(1), 'hFig'); SetupFigurePointGrey(1);
+                    elseif   isempty(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
+                    elseif  ~isvalid(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
+                    end 
+                    if      ~isfield(Xin.UI.FigPGC(2), 'hFig'); SetupFigurePointGrey(2);
+                    elseif   isempty(Xin.UI.FigPGC(2).hFig);    SetupFigurePointGrey(2);
+                    elseif  ~isvalid(Xin.UI.FigPGC(2).hFig);    SetupFigurePointGrey(2);
+                    end              
+                    warndlg([   'This will allow the following recording sessions to record both ',...
+                                'Animal Monitoring & Pupillometry cameras synchronized with the ',...
+                                'main camera as well']);
+                	Xin.D.Ses.MonitoringCams =  2;
+            end
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_MonitoringCams\tSession monitoring cams recording selected as: '...
+                val '\r\n']; 
         otherwise
             errordlg('Rocker tag unrecognizable!');
     end
@@ -205,7 +283,7 @@ function GUI_Toggle(varargin)
         val =       get(get(gcbo,'SelectedObject'),'string');
     else
         % called by general update: GUI_Toggle('hSys_LightSource_Toggle', 'Blue')
-        label =     varargin{1};
+        label =     [varargin{1} '0'];
         val =       varargin{2};
     end    
     %% Update GUI
@@ -213,9 +291,11 @@ function GUI_Toggle(varargin)
     eval(['h{2} = Xin.UI.H.', label(1:end-1) '2;'])   
 	hc{1}.h =   get(h{1}, 'Children');
 	hc{2}.h =   get(h{2}, 'Children');
+    is = 0;     js = 0;
   	for i = 1:2
         for j = 1:3
             if strcmp( get(hc{i}.h(j), 'string'), val )
+                is = i; js = j;
                 set(h{i},   'SelectedObject', hc{i}.h(j) );
                 set(h{3-i}, 'SelectedObject', '');
                 set(hc{i}.h(j),	'backgroundcolor', Xin.UI.C.SelectB);
@@ -227,9 +307,10 @@ function GUI_Toggle(varargin)
 	%% Update D & Log
     switch label(1:end-1)
         case 'hSys_LightSource_Toggle'                
-            Xin.D.Sys.Light.Source = val;
+            Xin.D.Sys.Light.Source =        val;
+            Xin.D.Sys.Light.Wavelength =    get(hc{is}.h(js), 'UserData');
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_LightSource\tSetup the light source as: '...
-                Xin.D.Sys.Light.Source '\r\n'];
+                Xin.D.Sys.Light.Source, sprintf(' @ %dnm', Xin.D.Sys.Light.Wavelength) '\r\n'];
         case 'hMky_ID_Toggle'
             Xin.D.Mky.ID = val;
             Xin.D.Exp.DataDir =     [   Xin.D.Sys.DataDir,...
@@ -238,6 +319,7 @@ function GUI_Toggle(varargin)
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMky_ID\tSetup the Monkey ID as: '...
                 Xin.D.Mky.ID '\r\n']; 
         otherwise
+             disp('GUI_Toggle tag not recognized!');
     end
     updateMsg(Xin.D.Exp.hLog, msg);
       
@@ -260,25 +342,53 @@ function GUI_Poten(varargin)
                 return;
         end
     else
-        % called by general update: GUI_Poten('hSys_LightSource_Toggle', 'Blue')
-        label =     varargin{1};
-        value =     varargin{2};
+        % called by general update: GUI_Poten('hSys_LightDiffuser_Poten', 20)
+        label =         varargin{1};
+        [~, label] =    strtok(reverse(label), '_');
+        label =         reverse(label(2:end));
+        value =         varargin{2};
     end 
     %% Update D & Log & GUI
     eval(['hEdit = Xin.UI.H.',  label,'_PotenEdit;']);
     eval(['hSlider = Xin.UI.H.',label,'_PotenSlider;']);
 	switch label
-        case 'hExp_Angle'
-            if round(value)>=0 || round(value)<=360
-                Xin.D.Exp.Angle = round(value);
+        case 'hSys_LightDiffuser'
+            [~, i] = min(abs(Xin.D.Sys.Light.Diffusers - value));
+            Xin.D.Sys.Light.Diffuser = Xin.D.Sys.Light.Diffusers(i);
+            value = Xin.D.Sys.Light.Diffuser;
+            set(hEdit,      'string',   sprintf('%dº',value));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_LightDiffuser\tupdated as: '...
+                num2str(Xin.D.Sys.Light.Diffuser) ' degrees \r\n'];        
+        case 'hSys_CameraLensAngle'
+            value = round(value);
+            if value>=0 || value<=360
+                Xin.D.Sys.CameraLens.Angle = value;
             else
-                Xin.D.Exp.Angle = Xin.D.Exp.Angle;
+                value = Xin.D.Sys.CameraLens.Angle;
             end
-            set(hEdit,      'string',   sprintf('%d',value));            
-            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_Angle\tupdated as: '...
-                num2str(Xin.D.Exp.Angle) '\r\n']; 
+            set(hEdit,      'string',   sprintf('%dº',value));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_CameraLensAngle\tupdated as: '...
+                num2str(Xin.D.Sys.CameraLens.Angle) '\r\n'];
+        case 'hSys_CameraLensAperture'
+            if value < Xin.D.Sys.CameraLens.Apertures(1)	% value is from GUI, not commend
+                value = 10^value;
+            end
+            [~, i] = min(abs(Xin.D.Sys.CameraLens.Apertures - value));
+            Xin.D.Sys.CameraLens.Aperture = Xin.D.Sys.CameraLens.Apertures(i);
+            value = log10(Xin.D.Sys.CameraLens.Aperture);
+            set(hEdit,      'string',   sprintf('f/%.2g', Xin.D.Sys.CameraLens.Aperture));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSys_CameraLensAperture\tupdated as: f/'...
+                num2str(Xin.D.Sys.CameraLens.Aperture) ' \r\n'];  
+        case 'hExp_Depth'            
+            [~, i] = min(abs(Xin.D.Exp.Depths - value));
+            Xin.D.Exp.Depth = Xin.D.Exp.Depths(i);
+            value = Xin.D.Exp.Depth;
+            set(hEdit,      'string',   sprintf('%d turn',value));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_Depth\tupdated as: '...
+                num2str(Xin.D.Exp.Depth) ' LT1 turns \r\n'];      
         otherwise
-    end
+             disp('GUI_Poten tag not recognized!');            
+	end
             set(hSlider,    'value',    value);
     updateMsg(Xin.D.Exp.hLog, msg);
     
@@ -310,6 +420,12 @@ function Ses_Load(varargin)
                                                 Xin.D.Ses.Load.SoundFigureTitle];
     set(Xin.UI.H0.hFig,                     'Name',     Xin.D.Sys.FigureTitle);
     set(Xin.UI.H.hSes_Start_Momentary,      'Enable',	'on');  % Enable start
+    if      Xin.D.Trl.Load.SoundNumTotal == 1
+        GUI_Rocker('hSes_TrlOrder_Rocker',	'Sequential');
+    elseif  Xin.D.Trl.Load.SoundNumTotal >1
+        GUI_Rocker('hSes_TrlOrder_Rocker',	'Randomized');
+        disp('test')
+    end
        
     %% LOG MSG
     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_Load\tSession sound loaded as from file: "' ...
@@ -318,6 +434,23 @@ function Ses_Load(varargin)
     
 function Ses_Start
     global Xin
+    %% Check if this starts or cancels the recording session
+    if Xin.D.Ses.Status == 1            % Session is running right now,
+                                        % about to be cancelled
+        choice = questdlg('Session cancelling?',...
+            'Do you really want to CANCELL the current recording session?',...
+            'Yes, really want to cancel', 'No, clicked by error',...
+            'No, clicked by error');
+        switch choice
+            case 'No, clicked by error'
+                disp('session continues');
+            case 'Yes, really want to cancel'
+                Xin.D.Ses.Status =	-1; % Session status switched to cancelling
+                disp('session about to be cancelled');
+        end           
+        return;                         % Return and leave the cancelling procedures 
+                                        % to the recording thread
+    end                                 % Otherwise proceed to start recording
     %% Check Surface Image
     tag =   0;
     try
@@ -332,59 +465,91 @@ function Ses_Start
                     'Take one before starting a session.'    });
         return;
     end
-    %% Update Xin.D.Sys.NI
+    %% Update Xin.D.Sys.NI & Power Meter
 	Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
                                     length( Xin.D.Ses.Load.SoundWave)*...
                                     Xin.D.Ses.Load.AddAttNumTotal*...
                                     Xin.D.Ses.Load.CycleNumTotal; 
+    % Xin.D.Sys.NIDAQ.Task_AO_Xin.everyN.everyNSamples = ...
+    %                                 round(Xin.D.Sys.Sound.SR*Xin.D.Trl.Load.DurTotal);       
     Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData =...
                                     reshape(Xin.D.Ses.Load.SoundMat(:,Xin.D.Ses.Load.TrlOrderSoundVec),1,[])';
     Xin.D.Ses.DataFileSize =        Xin.D.Vol.ImageHeight/Xin.D.Vol.VideoBin *...
                                     Xin.D.Vol.ImageWidth/Xin.D.Vol.VideoBin *...
                                     Xin.D.Ses.FrameTotal*2/10^9;
-    Xin.D.Vol.FramePowerSampleNum = round(...
-                                    Xin.D.Sys.PointGreyCam(2).Shutter/1000*...
-                                    Xin.D.Sys.NIDAQ.Task_AI_Xin.time.rate);                           
-    
+    if          Xin.D.Sys.Light.Monitoring == 'N'
+            Xin.D.Vol.FramePowerSampleNum =             NaN;
+            Xin.D.Ses.Save.SesPowerMeter =              [];  
+                                        % TB changed
+    else
+        if      Xin.D.Sys.Light.Monitoring == 'S'  
+            Xin.D.Sys.PowerMeter{1}.INPutFILTering =    1;  % 15Hz :1, 100kHz :0
+            Xin.D.Sys.PowerMeter{1}.AVERageCOUNt =      round(...
+                        (1/Xin.D.Sys.PointGreyCam(3).RecUpdateRate/2)/0.0003); 
+                                                            % average Counts (1~=.3ms)
+            Xin.D.Sys.PowerMeter{1}.InitialMEAsurement= 1;  % send the initial messurement request
+            Xin.D.Ses.Save.SesPowerMeter =              zeros(	Xin.D.Ses.UpdateNumTotal,...
+                                                                Xin.D.Sys.PointGreyCam(3).RecFrameBlockNum);
+            Xin.D.Vol.FramePowerSampleNum =             NaN;      
+        elseif	Xin.D.Sys.Light.Monitoring == 'F'
+            Xin.D.Sys.PowerMeter{1}.INPutFILTering =    0;  % 15Hz :1, 100kHz :0
+            Xin.D.Sys.PowerMeter{1}.AVERageCOUNt =      1;  % average Counts (1~=.3ms)
+            Xin.D.Vol.FramePowerSampleNum =             round(...
+                        Xin.D.Sys.PointGreyCam(3).Shutter/1000*...
+                        Xin.D.Sys.NIDAQ.Task_AI_Xin.time.rate); 
+            Xin.D.Ses.Save.SesPowerMeter =              zeros(	Xin.D.Ses.FrameTotal,...
+                                                                Xin.D.Vol.FramePowerSampleNum);
+        else
+            errordlg('Light monitoring mode not recognizable');
+        end
+            Xin.D.Sys.PowerMeter{1}.WAVelength =        Xin.D.Sys.Light.Wavelength;
+            SetupThorlabsPowerMeters('Xin');
+    end
 	%% Questdlg the information
     disp('Trial Order:');
     disp(Xin.D.Ses.Load.TrlOrderMat);
   	videoinfo = {...
-        ['System Light Source: ',       Xin.D.Sys.Light.Source,     '; '],...
-     	['System Light Port: ',     	Xin.D.Sys.Light.Port,       '; '],...
-     	['System Light Head Cube: ',	Xin.D.Sys.Light.HeadCube,	'; '],...
-        ['System Cam DispGainNum: ',	num2str(Xin.D.Sys.PointGreyCam(2).DispGainNum),  ' (frames); '],...
-        ['System Cam Shutter: ',        sprintf('%5.2f',Xin.D.Sys.PointGreyCam(2).Shutter),  ' (ms); '],...
-        ['System Cam Gain: ',           sprintf('%5.2f',Xin.D.Sys.PointGreyCam(2).Gain),     ' (dB); '],...
-    	['Monkey ID: ',         Xin.D.Mky.ID,                       '; '],...
-     	['Monkey Side: ',       Xin.D.Mky.Side,                     '; '],...
-     	['Experiment Date: ',	Xin.D.Exp.DateStr,                  '; '],...
-        ['Experiment Depth: ',	sprintf('%5.2f',Xin.D.Exp.Depth),   ' (LT1 fine turn); '],...
-        ['Session Sound File: ',        Xin.D.Ses.Load.SoundFile,        '; '],...
-        ['Session Sound Dir: ',         Xin.D.Ses.Load.SoundDir,         '; '],...
-        ['Session Sound Title: ',       Xin.D.Ses.Load.SoundTitle,       '; '],...
-        ['Session Sound Artist: ',      Xin.D.Ses.Load.SoundArtist,      '; '],...
-        ['Session Cycle Duration: ',    sprintf('%5.1f',Xin.D.Ses.Load.CycleDurTotal),	' (s); '],...
-        ['Session Cycle Number Total: ',sprintf('%d',   Xin.D.Ses.Load.CycleNumTotal),	'; '],...
-        ['Session Duration Total: ',	sprintf('%5.1f',Xin.D.Ses.Load.DurTotal),        ' (s); '],...
-        ['Session Data File Size: ',    sprintf('%5.2f',Xin.D.Ses.DataFileSize),	' (GB); '],...
-        ['Trial Number per Sound: ',    sprintf('%d',   Xin.D.Trl.Load.NumTotal),        '; '],...
-        ['Trial Duration: ',            sprintf('%5.2f',Xin.D.Trl.Load.DurTotal),        ' (s); '],...
-        ['Trial Duration PreStim: ',	sprintf('%5.2f',Xin.D.Trl.Load.DurPreStim),      ' (s); '],...
-        ['Trial Duration Stim: ',       sprintf('%5.2f',Xin.D.Trl.Load.DurStim),         ' (s); '],...
-        ['Trial Duration PostStim: ',	sprintf('%5.2f',Xin.D.Trl.Load.DurPostStim),     ' (s); ']...
+        ['System Light Source: ',           Xin.D.Sys.Light.Source,                             '; '],...
+        ['System Light Wavelength: ',       num2str(Xin.D.Sys.Light.Wavelength),                'nm; '],...
+     	['System Light Port: ',             Xin.D.Sys.Light.Port,                               '; '],...
+        ['System Light Monitoring: ',       Xin.D.Sys.Light.Monitoring,                         '; '],...
+        ['System Light Diffuser: ',         num2str(Xin.D.Sys.Light.Diffuser),                  'º; '],...
+     	['System Light Head Cube: ',        Xin.D.Sys.Light.HeadCube,                           '; '],...
+        ['System Camera Lens Angle: ',      num2str(Xin.D.Sys.CameraLens.Angle),                'º; '],...
+        ['System Camera Lens Aperture: ',   sprintf('f/%.2g',Xin.D.Sys.CameraLens.Aperture),	'; '],...
+        ['System Cam DispGainNum: ',        num2str(Xin.D.Sys.PointGreyCam(3).DispGainNum),	' (frames); '],...
+        ['System Cam Shutter: ',            sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Shutter),	' (ms); '],...
+        ['System Cam Gain: ',               sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Gain),	' (dB); '],...
+    	['Monkey ID: ',                     Xin.D.Mky.ID,                                       '; '],...
+     	['Monkey Side: ',                   Xin.D.Mky.Side,                                     '; '],...
+        ['Monkey Prep: ',                   Xin.D.Mky.Prep,                                     '; '],...
+     	['Experiment Date: ',               Xin.D.Exp.DateStr,                                  '; '],...
+        ['Experiment Depth: ',              sprintf('%d',Xin.D.Exp.Depth),      ' (LT1 fine turn); '],...
+        ['Session Sound File: ',            Xin.D.Ses.Load.SoundFile,                           '; '],...
+        ['Session Sound Dir: ',             Xin.D.Ses.Load.SoundDir,                            '; '],...
+        ['Session Sound Title: ',           Xin.D.Ses.Load.SoundTitle,                          '; '],...
+        ['Session Sound Artist: ',          Xin.D.Ses.Load.SoundArtist,                         '; '],...
+        ['Session Cycle Duration: ',        sprintf('%5.1f',Xin.D.Ses.Load.CycleDurTotal),	' (s); '],...
+        ['Session Cycle Number Total: ',    sprintf('%d',   Xin.D.Ses.Load.CycleNumTotal),	'; '],...
+        ['Session Duration Total: ',        sprintf('%5.1f',Xin.D.Ses.Load.DurTotal),       ' (s); '],...
+        ['Session Data File Size: ',        sprintf('%5.2f',Xin.D.Ses.DataFileSize),        ' (GB); '],...
+        ['Trial Number per Sound: ',        sprintf('%d',   Xin.D.Trl.Load.NumTotal),       '; '],...
+        ['Trial Duration: ',                sprintf('%5.2f',Xin.D.Trl.Load.DurTotal),       ' (s); '],...
+        ['Trial Duration PreStim: ',        sprintf('%5.2f',Xin.D.Trl.Load.DurPreStim),     ' (s); '],...
+        ['Trial Duration Stim: ',           sprintf('%5.2f',Xin.D.Trl.Load.DurStim),        ' (s); '],...
+        ['Trial Duration PostStim: ',       sprintf('%5.2f',Xin.D.Trl.Load.DurPostStim),    ' (s); ']...
         };
     promptinfo = [...
         videoinfo,...
         {''},...
         {'Are these settings correct?'}];
     choice = questdlg(promptinfo,...
-        'Imaging conditions:',...
+        'Recording conditions:',...
         'No, Cancel and Reset', 'Yes, Take a Recording',...
         'No, Cancel and Reset');
    	switch choice
         case 'No, Cancel and Reset';    return;
-        case 'Yes, Take an Image'     
+        case 'Yes, Take a Recording'     
     end  
     
     %% Setup Recording File & Memory Allocation
@@ -394,17 +559,24 @@ function Ses_Start
         Xin.D.Sys.Light.Port,    '_',...
         Xin.D.Sys.Light.HeadCube];   
     Xin.D.Ses.DataFile =   [dataname '.rec'];
-    hFile =                 fopen([Xin.D.Exp.DataDir, Xin.D.Ses.DataFile],'w');     
-	Xin.D.Ses.Save.SysLightSource =     Xin.D.Sys.Light.Source;
+    hFile =                 fopen([Xin.D.Exp.DataDir, Xin.D.Ses.DataFile],'w');   
+    
+	Xin.D.Ses.Save.SysLightSource =     Xin.D.Sys.Light.Source;   
+	Xin.D.Ses.Save.SysLightWavelength = Xin.D.Sys.Light.Wavelength;
 	Xin.D.Ses.Save.SysLightPort =       Xin.D.Sys.Light.Port;
+    Xin.D.Ses.Save.SysLight.Monitoring= Xin.D.Sys.Light.Monitoring;
+	Xin.D.Ses.Save.SysLightDiffuser =	Xin.D.Sys.Light.Diffuser;
 	Xin.D.Ses.Save.SysLightHeadCube =	Xin.D.Sys.Light.HeadCube;
-	Xin.D.Ses.Save.SysCamShutter =      Xin.D.Sys.PointGreyCam(2).Shutter;
-	Xin.D.Ses.Save.SysCamGain =         Xin.D.Sys.PointGreyCam(2).Gain;
-	Xin.D.Ses.Save.SysCamDispGainNum =  Xin.D.Sys.PointGreyCam(2).DispGainNum;
+    Xin.D.Ses.Save.SysCameraLensAngle = Xin.D.Sys.CameraLens.Angle;
+    Xin.D.Ses.Save.SysCameraLensAperture = ...
+                                        Xin.D.Sys.CameraLens.Aperture;
+	Xin.D.Ses.Save.SysCamShutter =      Xin.D.Sys.PointGreyCam(3).Shutter;
+	Xin.D.Ses.Save.SysCamGain =         Xin.D.Sys.PointGreyCam(3).Gain;
+	Xin.D.Ses.Save.SysCamDispGainNum =  Xin.D.Sys.PointGreyCam(3).DispGainNum;
   	Xin.D.Ses.Save.MkyID =              Xin.D.Mky.ID;
     Xin.D.Ses.Save.MkySide =            Xin.D.Mky.Side;
+    Xin.D.Ses.Save.MkyPrep =            Xin.D.Mky.Prep;
     Xin.D.Ses.Save.ExpDateStr =         Xin.D.Exp.DateStr;
-    Xin.D.Ses.Save.ExpAngle =           Xin.D.Exp.Angle;
     Xin.D.Ses.Save.ExpDepth =           Xin.D.Exp.Depth;
     Xin.D.Ses.Save.SesSoundFile =       Xin.D.Ses.Load.SoundFile;
     Xin.D.Ses.Save.SesSoundDir =        Xin.D.Ses.Load.SoundDir;    
@@ -412,7 +584,7 @@ function Ses_Start
     Xin.D.Ses.Save.SesSoundArtist =     Xin.D.Ses.Load.SoundArtist; 
     Xin.D.Ses.Save.SesSoundComment =	Xin.D.Ses.Load.SoundComment;  
     Xin.D.Ses.Save.SesSoundWave =       Xin.D.Ses.Load.SoundWave;  
-    Xin.D.Ses.Save.SesSoundDurTotal =   Xin.D.Ses.Load.SoundDurTotal;  
+    Xin.D.Ses.Save.SesSoundDurTotal =   Xin.D.Ses.Load.SoundDurTotal; 
     Xin.D.Ses.Save.AddAtts =            Xin.D.Ses.Load.AddAtts; 
     Xin.D.Ses.Save.AddAttNumTotal =     Xin.D.Ses.Load.AddAttNumTotal; 
     Xin.D.Ses.Save.SesCycleDurTotal =   Xin.D.Ses.Load.CycleDurTotal;
@@ -421,8 +593,7 @@ function Ses_Start
     Xin.D.Ses.Save.SesFrameTotal =      Xin.D.Ses.FrameTotal;
     Xin.D.Ses.Save.SesFrameNum =        zeros(      Xin.D.Ses.FrameTotal,    1);
     Xin.D.Ses.Save.SesTimestamps =      char(zeros( Xin.D.Ses.FrameTotal,    21));
-    Xin.D.Ses.Save.SesPowerMeter =      zeros(      Xin.D.Ses.FrameTotal,...
-                                                    Xin.D.Vol.FramePowerSampleNum);                                           
+    % Xin.D.Ses.Save.SesPowerMeter is setup above 
     Xin.D.Ses.Save.TrlIndexSoundNum =   Xin.D.Ses.Load.TrlIndexSoundNum;
     Xin.D.Ses.Save.TrlIndexAddAttNum =  Xin.D.Ses.Load.TrlIndexAddAttNum;    
     Xin.D.Ses.Save.SesTrlOrder =        Xin.D.Ses.Load.TrlOrder;
@@ -435,9 +606,9 @@ function Ses_Start
     Xin.D.Ses.Save.TrlDurStim =         Xin.D.Trl.Load.DurStim;
     Xin.D.Ses.Save.TrlDurPostStim =     Xin.D.Trl.Load.DurPostStim;
     Xin.D.Ses.Save.TrlNames =           Xin.D.Trl.Load.Names;
-    Xin.D.Ses.Save.TrlAttenuations =	Xin.D.Trl.Load.Attenuations;
+    Xin.D.Ses.Save.TrlAttenuations =	Xin.D.Trl.Load.Attenuations;  
     
-    %% GUI Update & Lock     
+    %% GUI Update & Lock, then do the Session Initiation Function     
     Xin.D.Ses.Load.SoundFigureTitle =   [   ': now playing "' ...
                                             Xin.D.Ses.Load.SoundFile '"'];    
     Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
@@ -454,10 +625,27 @@ function Ses_Start
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tTDT PA5 set up\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     %% Camera Trigger Settings & Start the Video Recording   
-    % CtrlPointGreyCams('Trigger_Mode', 2, 'SoftwareRec');
-    CtrlPointGreyCams('Trigger_Mode', 2, 'HardwareRec'); 
-	Xin.HW.PointGrey.Cam(2).hVid.TriggerRepeat = Xin.D.Ses.FrameTotal - 1;
-	start(          Xin.HW.PointGrey.Cam(2).hVid);
+    if Xin.D.Ses.MonitoringCams
+        for i = 1:Xin.D.Ses.MonitoringCams
+%             hVWC{i} = VideoWriter([Xin.D.Exp.DataDir, datanamet(3:end),'_#',...
+%                 Xin.D.Sys.PointGreyCam(i).Comments,'.mj2'], 'Archival');
+%             hVWC{i}.FrameRate =             Xin.D.Sys.PointGreyCam(i).FrameRate;
+%             hVWC{i}.LosslessCompression =   true;
+%             hVWC{i}.MJ2BitDepth =           8;
+            hVWC{i} = VideoWriter([Xin.D.Exp.DataDir, datanamet(3:end),'_#',...
+                Xin.D.Sys.PointGreyCam(i).Comments,'.avi'], 'Grayscale AVI');
+            hVWC{i}.FrameRate =             Xin.D.Sys.PointGreyCam(i).FrameRate;
+                Xin.HW.PointGrey.Cam(i).hVid.LoggingMode =	'disk';            
+                Xin.HW.PointGrey.Cam(i).hVid.DiskLogger =	hVWC{i};
+                Xin.HW.PointGrey.Cam(i).hVid.TriggerRepeat = ...
+                    Xin.D.Ses.Load.DurTotal*Xin.D.Sys.PointGreyCam(i).FrameRate - 1;
+            CtrlPointGreyCams('Trigger_Mode', i, 'HardwareRec'); 
+            start(Xin.HW.PointGrey.Cam(i).hVid);  
+        end
+    end
+    CtrlPointGreyCams('Trigger_Mode', 3, 'HardwareRec'); 
+	Xin.HW.PointGrey.Cam(3).hVid.TriggerRepeat = Xin.D.Ses.FrameTotal - 1;
+	start(          Xin.HW.PointGrey.Cam(3).hVid);
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tPointGrey set up\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     %% Initialize Ses timing related stuff
@@ -466,20 +654,28 @@ function Ses_Start
     updateTrial;    % this also updates the PA5     
     %% NI Start
     StartNIDAQ;     
+                Xin.D.Ses.Status =	1;  % Session status switched to started
     %% Capturing Video
     while(1)
         %% Wait until at least a full block (assume 16) of frames is available
         while(1)
-            Xin.D.Ses.FrameAvailable =  Xin.HW.PointGrey.Cam(2).hVid.FramesAvailable;
+            Xin.D.Ses.FrameAvailable =  Xin.HW.PointGrey.Cam(3).hVid.FramesAvailable;
             if Xin.D.Ses.FrameAvailable >= Xin.D.Vol.UpdFrameNum; break; end
         	pause(0.01);
         end
         %% Update Trial
         updateTrial;
+        %% Update PowerMeter Readings
+        if Xin.D.Sys.Light.Monitoring == 'S'
+            Xin.D.Ses.Save.SesPowerMeter(Xin.D.Ses.UpdateNumCurrent,:) = ...
+            	str2double(Xin.HW.Thorlabs.PM100{1}.h.fscanf)*...
+                ones(1,Xin.D.Sys.PointGreyCam(3).RecFrameBlockNum);
+            fprintf(Xin.HW.Thorlabs.PM100{1}.h,  'MEAS:POW?'); 
+        end        
         %% Read a block (assume 16) of frames
         [   Xin.D.Vol.UpdFrameBlockRaw, ~,...
             Xin.D.Vol.UpdMetadataBlockRaw] = ...
-            getdata(Xin.HW.PointGrey.Cam(2).hVid, Xin.D.Vol.UpdFrameNum,...
+            getdata(Xin.HW.PointGrey.Cam(3).hVid, Xin.D.Vol.UpdFrameNum,...
                     'uint16', 'numeric');       
         %% (4x4 Binning Pixels) & Save the Data
     	Xin.D.Vol.UpdFrameBlockS1 = reshape(Xin.D.Vol.UpdFrameBlockRaw,...
@@ -503,38 +699,66 @@ function Ses_Start
             num2str(Xin.D.Vol.UpdMetadataBlockS3(end)) '\r\n'];
         updateMsg(Xin.D.Exp.hLog, msg);
         %% Update the Frame Schedule       
-    	Xin.D.Ses.FrameRequested =  Xin.HW.PointGrey.Cam(2).hVid.TriggersExecuted;
-       	Xin.D.Ses.FrameAcquired =   Xin.HW.PointGrey.Cam(2).hVid.FramesAcquired;          
-     	Xin.D.Ses.FrameAvailable =  Xin.HW.PointGrey.Cam(2).hVid.FramesAvailable;
-    	set(Xin.UI.H.hSes_FrameAcquired_Edit,   'string',   num2str(Xin.D.Ses.FrameAcquired) );
-        set(Xin.UI.H.hSes_FrameAvailable_Edit,  'string',   num2str(Xin.D.Ses.FrameAvailable) );
-        %% Stop if All Frames Are Acquired and Read
+    	Xin.D.Ses.FrameRequested =  Xin.HW.PointGrey.Cam(3).hVid.TriggersExecuted;
+       	Xin.D.Ses.FrameAcquired =   Xin.HW.PointGrey.Cam(3).hVid.FramesAcquired;          
+     	Xin.D.Ses.FrameAvailable =  Xin.HW.PointGrey.Cam(3).hVid.FramesAvailable;
+    	set(Xin.UI.H.hSes_FrameAcquired_Edit,   'string', ...
+            sprintf('%d)%d', [Xin.D.Ses.FrameAvailable Xin.D.Ses.FrameAcquired]) );
+        %% Stopping or Cancelling
         if  Xin.D.Ses.FrameAcquired == Xin.D.Ses.FrameTotal && ...
-            Xin.HW.PointGrey.Cam(2).hVid.FramesAvailable == 0
+            Xin.HW.PointGrey.Cam(3).hVid.FramesAvailable == 0
+                                        % if All Frames Are Acquired and
+                                        % Read, stopping
+                Xin.D.Ses.Status =	0;  % Session status switched to stopped  
+                msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tAll frames recorded. Session about to stop\r\n'];
+                updateMsg(Xin.D.Exp.hLog, msg);
+                pause(2);
             break;
+        elseif  Xin.D.Ses.Status ==	-1  % cancelling flag is raised 
+            break;            
         end
     end
-    msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tAll frames recorded. Session about to stop\r\n'];
-    updateMsg(Xin.D.Exp.hLog, msg);
     %% NI Stop
-    pause(2);
-    StopNIDAQ;        
-    %% GUI & Trigger Release
-    CtrlPointGreyCams('Trigger_Mode', 2, 'SoftwareGrab');
-    set(Xin.UI.H0.hFig, 'Name', Xin.D.Sys.FullName);
-    EnableGUI('on');  
-    %% Final Save
-    S = Xin.D.Ses.Save;
-    save([Xin.D.Exp.DataDir, dataname '.mat'], 'S', '-v7.3');
-	fclose(hFile);    
-    msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tData file saved. Session stopped\r\n'];
+    StopNIDAQ;   
+    %% GUI Release
+    if      Xin.D.Ses.Status ==	0       % stopped 
+        %% Final Save
+        if Xin.D.Sys.Light.Monitoring == 'S'
+            Xin.D.Ses.Save.SesPowerMeter = reshape(...
+                                            Xin.D.Ses.Save.SesPowerMeter',...
+                                            Xin.D.Ses.FrameTotal,...
+                                            1);
+        end
+        S = Xin.D.Ses.Save;
+        save([Xin.D.Exp.DataDir, dataname '.mat'], 'S', '-v7.3');
+        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tData file saved. Session stopped\r\n']; 
+        Xin.D.Ses.Load.SoundFigureTitle =   [   ': now "' ...
+                                                Xin.D.Ses.Load.SoundFile '" recording session has ended'];
+    elseif	Xin.D.Ses.Status ==	-1      % cancelled
+        %% Camera Stop
+        stop(          Xin.HW.PointGrey.Cam(3).hVid);
+        msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tSession cancelled\r\n']; 
+        Xin.D.Ses.Load.SoundFigureTitle =   [   ': now "' ...
+                                                Xin.D.Ses.Load.SoundFile '" recording session cancelled'];
+                Xin.D.Ses.Status =	0;  % Session status switched to stopped
+    end
+    %% Release the camera and the recording file
+	fclose(hFile);      
+            CtrlPointGreyCams('Trigger_Mode', 3, 'SoftwareGrab');
+	if Xin.D.Ses.MonitoringCams
+        for i = 1:Xin.D.Ses.MonitoringCams
+            stop(Xin.HW.PointGrey.Cam(i).hVid);
+            CtrlPointGreyCams('Trigger_Mode', i, 'SoftwareGrab');
+                Xin.HW.PointGrey.Cam(i).hVid.LoggingMode =	'memory'; 
+        end
+	end
+    %% MSG & GUI Updates
     updateMsg(Xin.D.Exp.hLog, msg);   
-    Xin.D.Ses.Load.SoundFigureTitle =   [   ': now "' ...
-                                            Xin.D.Ses.Load.SoundFile '" recording session has ended']; 
     Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
                                             Xin.D.Ses.Load.SoundFigureTitle];
     set(Xin.UI.H0.hFig, 'Name', Xin.D.Sys.FigureTitle);
-
+	EnableGUI('on'); 
+        
 function Cam_CleanUp
     global Xin         
     %% Check Surface After Image
@@ -570,7 +794,8 @@ function Cam_CleanUp
                 end
                 instrreset;
             catch
-                warndlg('Can not close Thorlabs Power Meters');
+%                 warndlg('Can not close Thorlabs Power Meters'); 
+%                 % not necessary for Xintrinsic
             end      
             %% Stop & Delete PointGrey Cameras
             try 
@@ -627,32 +852,39 @@ function EnableGUI(mode)
     global Xin
     a{1} =  get(Xin.UI.H.hSys_LightSource_Toggle1,	'Children');
     a{2} =  get(Xin.UI.H.hSys_LightSource_Toggle2,	'Children');    
-    a{3} =  get(Xin.UI.H.hSys_LightPort_Rocker,     'Children'); 
-    a{4} =  get(Xin.UI.H.hSys_HeadCube_Rocker,      'Children');    
+    a{3} =  get(Xin.UI.H.hSys_LightConfig_Rocker,	'Children'); 
+    a{4} =  get(Xin.UI.H.hSys_LightMonitor_Rocker,	'Children');    
     a{5} =  get(Xin.UI.H.hMky_ID_Toggle1,           'Children');   
     a{6} =  get(Xin.UI.H.hMky_ID_Toggle2,           'Children');
     a{7} =  get(Xin.UI.H.hMky_Side_Rocker,          'Children');
-    a{8} =  get(Xin.UI.H.hSes_TrlOrder_Rocker,      'Children');
+    a{8} =  get(Xin.UI.H.hMky_Prep_Rocker,          'Children');
+    a{9} =  get(Xin.UI.H.hSes_TrlOrder_Rocker,      'Children');
+    a{10} = get(Xin.UI.H.hMon_SyncRec_Rocker,      'Children');
     
     hArray = [...
-        a{1}(2),    a{1}(3),...
-        a{2}(2),    a{2}(3),...
-        a{3}(2),    a{3}(3),...
-        a{4}(1),    a{4}(2),    a{4}(3),...   
-        a{5}(3),...
-        a{6}(2),    a{6}(3),... 
-        a{7}(2),    a{7}(3),...
-        a{8}(2),    a{8}(3),...
+        a{1}(1),    a{1}(2),    a{1}(3),...
+        a{2}(1),    a{2}(2),    a{2}(3),...
+        a{3}(1),    a{3}(2),    a{3}(3),...
+        a{4}(1),    a{4}(2),    a{4}(3),...  
+        a{5}(1),    a{5}(2),    a{5}(3),...
+        a{6}(1),    a{6}(2),    a{6}(3),...    
+                    a{7}(2),    a{7}(3),...
+                    a{8}(2),    a{8}(3),...
+        a{9}(1),    a{9}(2),    a{9}(3),...   
+                    a{10}(2),   a{10}(3),... 
+        Xin.UI.H.hSys_LightDiffuser_PotenSlider,...
+        Xin.UI.H.hSys_LightDiffuser_PotenEdit,...
+        Xin.UI.H.hSys_CameraLensAngle_PotenSlider,...
+        Xin.UI.H.hSys_CameraLensAngle_PotenEdit,...
+        Xin.UI.H.hSys_CameraLensAperture_PotenSlider,...           
         Xin.UI.H.hSys_CamShutter_PotenSlider,...
         Xin.UI.H.hSys_CamShutter_PotenEdit,...
         Xin.UI.H.hSys_CamGain_PotenSlider,...
         Xin.UI.H.hSys_CamGain_PotenEdit,...
-        Xin.UI.H.hSys_CamDispGain_PotenSlider,...
-        Xin.UI.H.hSys_CamDispGain_PotenEdit,...
         Xin.UI.H.hExp_RefImage_Momentary,...
-        Xin.UI.H.hExp_Depth_Edit,...
+        Xin.UI.H.hExp_Depth_PotenSlider,...
+        Xin.UI.H.hExp_Depth_PotenEdit,...
         Xin.UI.H.hSes_Load_Momentary,...
-        Xin.UI.H.hSes_Start_Momentary,...
         Xin.UI.H.hSes_CycleNumTotal_Edit,...
         Xin.UI.H.hSes_AddAtts_Edit];
     set(hArray, 'Enable',   mode);

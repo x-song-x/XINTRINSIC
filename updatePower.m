@@ -1,6 +1,5 @@
 function updatePower(~,evnt)
 global Xin
-
 if  Xin.D.Ses.UpdateNumCurrentAI < Xin.D.Ses.UpdateNumTotal    
 	%% Recording Duration Update  
     Xin.D.Ses.UpdateNumCurrentAI =	Xin.D.Ses.UpdateNumCurrentAI + 1; 
