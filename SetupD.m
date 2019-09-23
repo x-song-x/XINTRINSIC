@@ -140,7 +140,7 @@ for d = 1
  	Xin.D.Sys.PointGreyCam(i).FrameRate =       10;
     Xin.D.Sys.PointGreyCam(i).ShutterResv =     0;
     Xin.D.Sys.PointGreyCam(i).GainPolar =       'Min';
-    Xin.D.Sys.PointGreyCam(i).PreviewRot =      180;
+    Xin.D.Sys.PointGreyCam(i).PreviewRot =      0;  % 180;
     Xin.D.Sys.PointGreyCam(i).PreviewZoom =     1;
     Xin.D.Sys.PointGreyCam(i).RecUpdateRate =	NaN;
     Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        NaN;     
@@ -157,7 +157,7 @@ for d = 1
  	Xin.D.Sys.PointGreyCam(i).FrameRate =       10;
     Xin.D.Sys.PointGreyCam(i).ShutterResv =     0;
     Xin.D.Sys.PointGreyCam(i).GainPolar =       'Min';
-    Xin.D.Sys.PointGreyCam(i).PreviewRot =      90;
+    Xin.D.Sys.PointGreyCam(i).PreviewRot =      0;  % 90;
     Xin.D.Sys.PointGreyCam(i).PreviewZoom =     1;
     Xin.D.Sys.PointGreyCam(i).RecUpdateRate =	NaN;
     Xin.D.Sys.PointGreyCam(i).RecFrameBlockNum =        NaN;     
@@ -496,6 +496,7 @@ end
 
 %% D.Mon (Monitor)
 for d = 1
+    Xin.D.Mon.PupilDetector =       Maripets;
 end
 
 %% LOG MSG

@@ -51,7 +51,8 @@ switch Xin.D.Sys.Configurations.CameraDriver{idx}
         errordlg('Camera Brand Not Supported Yet!')
         clear global;
         return
-end                   
+end     
+SetupTDTSys3PA5('Xin');
 SetupPointGreyCams;
 SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');
     CtrlPointGreyCams('InitializeCallbacks', 3);     
@@ -420,11 +421,12 @@ function Ses_Load(varargin)
                                                 Xin.D.Ses.Load.SoundFigureTitle];
     set(Xin.UI.H0.hFig,                     'Name',     Xin.D.Sys.FigureTitle);
     set(Xin.UI.H.hSes_Start_Momentary,      'Enable',	'on');  % Enable start
-    if      Xin.D.Trl.Load.SoundNumTotal == 1
+    if strcmp(Xin.D.Ses.Load.TrlOrder, 'Pre-arranged')
+        GUI_Rocker('hSes_TrlOrder_Rocker',	'Pre-arranged');        
+    elseif 	Xin.D.Trl.Load.SoundNumTotal == 1
         GUI_Rocker('hSes_TrlOrder_Rocker',	'Sequential');
     elseif  Xin.D.Trl.Load.SoundNumTotal >1
         GUI_Rocker('hSes_TrlOrder_Rocker',	'Randomized');
-        disp('test')
     end
        
     %% LOG MSG
@@ -466,15 +468,19 @@ function Ses_Start
         return;
     end
     %% Update Xin.D.Sys.NI & Power Meter
-	Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
+        Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
                                     length( Xin.D.Ses.Load.SoundWave)*...
                                     Xin.D.Ses.Load.AddAttNumTotal*...
                                     Xin.D.Ses.Load.CycleNumTotal; 
     % Xin.D.Sys.NIDAQ.Task_AO_Xin.everyN.everyNSamples = ...
-    %                                 round(Xin.D.Sys.Sound.SR*Xin.D.Trl.Load.DurTotal);       
-    Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData =...
-                                    reshape(Xin.D.Ses.Load.SoundMat(:,Xin.D.Ses.Load.TrlOrderSoundVec),1,[])';
-    Xin.D.Ses.DataFileSize =        Xin.D.Vol.ImageHeight/Xin.D.Vol.VideoBin *...
+    %                                 round(Xin.D.Sys.Sound.SR*Xin.D.Trl.Load.DurTotal);  
+    if strcmp(Xin.D.Ses.Load.TrlOrder, 'Pre-arranged')     
+        Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData = Xin.D.Ses.Load.SoundWave;
+    else
+        Xin.D.Sys.NIDAQ.Task_AO_Xin.write.writeData =...
+                                    reshape(Xin.D.Ses.Load.SoundMat(:,Xin.D.Ses.Load.TrlOrderSoundVec),[],1);
+    end
+        Xin.D.Ses.DataFileSize =	Xin.D.Vol.ImageHeight/Xin.D.Vol.VideoBin *...
                                     Xin.D.Vol.ImageWidth/Xin.D.Vol.VideoBin *...
                                     Xin.D.Ses.FrameTotal*2/10^9;
     if          Xin.D.Sys.Light.Monitoring == 'N'
@@ -618,10 +624,6 @@ function Ses_Start
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tSession is about to start with the sound: "' ...
         Xin.D.Ses.Load.SoundFile '"\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
-    %% TDT PA5 Setup
-  	Xin.HW.TDT.PA5 = actxcontrol('PA5.x',[0 0 1 1]);
-    pause(1);
-    invoke(Xin.HW.TDT.PA5,'ConnectPA5','USB',1);
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tTDT PA5 set up\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     %% Camera Trigger Settings & Start the Video Recording   
@@ -888,3 +890,6 @@ function EnableGUI(mode)
         Xin.UI.H.hSes_CycleNumTotal_Edit,...
         Xin.UI.H.hSes_AddAtts_Edit];
     set(hArray, 'Enable',   mode);
+    if strcmp(Xin.D.Ses.Load.TrlOrder, 'Pre-arranged')
+        set(Xin.UI.H.hSes_CycleNumTotal_Edit, 'Enable', 'off');
+    end
