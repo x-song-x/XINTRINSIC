@@ -173,7 +173,7 @@ for d = 1
     Xin.D.Sys.PointGreyCam(i).TriggerSource =   'externalTriggerMode14-Source0';
     Xin.D.Sys.PointGreyCam(i).Located =         0;
  	Xin.D.Sys.PointGreyCam(i).FrameRate =       80;         % Max is 87.075;
-    Xin.D.Sys.PointGreyCam(i).ShutterResv =     2.3962;     % in (ms) Reserve for shutter read  
+    Xin.D.Sys.PointGreyCam(i).ShutterResv =     0.3962;     % in (ms) Reserve for shutter read  
     Xin.D.Sys.PointGreyCam(i).GainPolar =       'Min';    
     Xin.D.Sys.PointGreyCam(i).PreviewRot =      0;
     Xin.D.Sys.PointGreyCam(i).PreviewZoom =     2;
@@ -348,7 +348,10 @@ end
 %% D.Mky (Monkey)
 for d = 1
 	%%%%%%%%%%%%%%%%%%%%%%% Monkey 
-    Xin.D.Mky.Lists.ID =            {'M00x', 'M96B', 'M126D'; 'M117B', 'M111Z', 'M132D'};
+    Xin.D.Mky.Lists.ID =            {   'M00x',     'M96B',     'M111Z';
+                                        'M8E',      'M126D',    'M15E';
+                                        'M7E',      '',         'M44D';
+                                        'M117B',    'M29A',     ''     };
     Xin.D.Mky.Lists.Side =          {'LEFT', 'RIGHT', ''};    
     Xin.D.Mky.Lists.Prep =          {'Win', 'Skull', ''};
     
@@ -373,6 +376,8 @@ for d = 1
 	%%%%%%%%%%%%%%%%%%%%%%% Geometry
     Xin.D.Exp.Depth =               0;          % Z depth (in LT1 fine turns)
     Xin.D.Exp.Depths =              -1:5;
+    Xin.D.Exp.RotationBPA =         0;          % Back Plate Angle Rotation
+    Xin.D.Exp.RotationBPAs =        -15:0.5:15;
 end
 
 %% D.Ses (Session, one session should be a bunch of trials measure)

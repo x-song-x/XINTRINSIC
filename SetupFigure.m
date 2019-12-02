@@ -98,7 +98,9 @@ Xin.UI.C = S.Color;
             'ZLimMode',     'Manual',...
             'CLimMode',     'Manual',...
             'ALimMode',     'Manual');
-        Xin.UI.H0.hImage = imshow(Xin.D.Sys.PointGreyCam(3).DispImg,...
+%         Xin.UI.H0.hImage = imshow(Xin.D.Sys.PointGreyCam(3).DispImg,...
+%             'parent',       Xin.UI.H0.hAxesImage); 
+        Xin.UI.H0.hImage = image(Xin.D.Sys.PointGreyCam(3).DispImg,...
             'parent',       Xin.UI.H0.hAxesImage); 
         
         % create the Hist Axes
@@ -349,7 +351,7 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         Xin.UI.H.hSys_CamDispGain_PotenEdit =   Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
         clear WP;    
  
-S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;     
+S.PnltCurrent.row = 3;      S.PnltCurrent.column = 10;     
 	WP.name = 'Mky Monkey#';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'ToggleSwitch';	
@@ -358,13 +360,29 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 11;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'Animal', 'ID'};
         WP.tip = {  'Animal', 'ID'};
-        WP.inputOptions = Xin.D.Mky.Lists.ID;
+        WP.inputOptions = Xin.D.Mky.Lists.ID(1:2,:);
         WP.inputDefault = [1, 0];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hMky_ID_Toggle1 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
         Xin.UI.H.hMky_ID_Toggle2 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
         set(Xin.UI.H.hMky_ID_Toggle1, 'Tag',    'hMky_ID_Toggle1');
         set(Xin.UI.H.hMky_ID_Toggle2, 'Tag',    'hMky_ID_Toggle2');
+        clear WP;   
+	WP.name = 'Mky Monkey#';
+        WP.handleseed = 'Xin.UI.H0.Panelette';
+        WP.type = 'ToggleSwitch';	
+        WP.row      = S.PnltCurrent.row;
+        WP.column   = S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;
+        WP.text = { 'Animal', 'ID'};
+        WP.tip = {  'Animal', 'ID'};
+        WP.inputOptions = Xin.D.Mky.Lists.ID(3:4,:);
+        WP.inputDefault = [1, 0];
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hMky_ID_Toggle3 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
+        Xin.UI.H.hMky_ID_Toggle4 =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
+        set(Xin.UI.H.hMky_ID_Toggle3, 'Tag',    'hMky_ID_Toggle3');
+        set(Xin.UI.H.hMky_ID_Toggle4, 'Tag',    'hMky_ID_Toggle4');
         clear WP;
         
 	WP.name = 'Mky Side & Prep';
@@ -419,6 +437,24 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         set(Xin.UI.H.hExp_Depth_PotenSlider,	'tag', 'hExp_Depth_PotenSlider');
         set(Xin.UI.H.hExp_Depth_PotenEdit,  	'tag', 'hExp_Depth_PotenEdit');
         clear WP;      
+        
+    WP.name = 'Exp Rotation';
+        WP.handleseed =	'Xin.UI.H0.Panelette';
+        WP.type =       'Potentiometer';	
+        WP.row =        S.PnltCurrent.row;
+        WP.column =     S.PnltCurrent.column;
+            S.PnltCurrent.column = S.PnltCurrent.column + 1;  
+        WP.text = 	{	['Back Plate Angle (degree)']};
+        WP.tip =    {   'Back Plate Angle (degree)'};
+        WP.inputRange =     Xin.D.Exp.RotationBPAs([1 end]);
+        WP.inputValue =     Xin.D.Exp.RotationBPA;
+        WP.inputSlideStep=  1/(Xin.D.Exp.RotationBPAs(end)-Xin.D.Exp.RotationBPAs(1))*[0.5 1.0];
+        Panelette(S, WP, 'Xin');
+        Xin.UI.H.hExp_RotationBPA_PotenSlider =	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
+        Xin.UI.H.hExp_RotationBPA_PotenEdit =	Xin.UI.H0.Panelette{WP.row,WP.column}.hEdit{1};
+        set(Xin.UI.H.hExp_RotationBPA_PotenSlider,	'tag', 'hExp_RotationBPA_PotenSlider');
+        set(Xin.UI.H.hExp_RotationBPA_PotenEdit,  	'tag', 'hExp_RotationBPA_PotenEdit');
+        clear WP;  
         
 S.PnltCurrent.row = 2;      S.PnltCurrent.column = 4;
 	WP.name = 'Ses Load & Start';
@@ -722,30 +758,30 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 1;
         
 S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8; 
 
-        
 	WP.name = 'Mon PreviewDisp';
         WP.handleseed = 'Xin.UI.H0.Panelette';
         WP.type = 'ToggleSwitch';	
         WP.row      = S.PnltCurrent.row;
         WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Preview Switch', 'Display ROI'};
-        WP.tip = {  'Preview Switch',...
-                    [   'Display ROI mode:\n',...
+        WP.text = { 'Display ROI', 'Display Ref'};
+        WP.tip = {  [   'Display ROI mode:\n',...
                         '\tDisplay full FOV;\n',...
                         '\tDisplay the ROI;\n',...
-                        '\tDraw ROI.'] };
-        WP.inputOptions = {	'ON', 'OFF', '';...
-                            'Full', 'ROI', 'Draw'};
+                        '\tDraw ROI.'] ,...
+                    [   'Load & Display a reference image',...
+                        '']...
+                    };
+        WP.inputOptions = {	'Full', 'ROI',  'Draw';...
+                            'Raw',  'Ref',  'Load'...
+                            };
         WP.inputDefault = [1, 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hMon_PreviewSwitch_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
-        Xin.UI.H.hVol_DisplayMode_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
-        set(Xin.UI.H.hMon_PreviewSwitch_Rocker, 'Tag', 'hMon_PreviewSwitch_Rocker');
-        set(Xin.UI.H.hVol_DisplayMode_Rocker,   'Tag',   'hVol_DisplayMode_Rocker');
+        Xin.UI.H.hVol_DisplayMode_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
+        Xin.UI.H.hVol_DisplayRef_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
+        set(Xin.UI.H.hVol_DisplayMode_Rocker,   'Tag',	'hVol_DisplayMode_Rocker');
+        set(Xin.UI.H.hVol_DisplayRef_Rocker,	'Tag',	'hVol_DisplayRef_Rocker');
         clear WP;
-        hc = get(Xin.UI.H.hVol_DisplayMode_Rocker, 'children');
-        set(hc(2), 'Enable', 'inactive');
         
   	WP.name = 'Mon CamPrevPara';
         WP.handleseed =	'Xin.UI.H0.Panelette';
@@ -792,19 +828,26 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
        
 	WP.name = 'Mon SyncRec';
         WP.handleseed = 'Xin.UI.H0.Panelette';
-        WP.type = 'RockerSwitch';	
+        WP.type = 'ToggleSwitch';	
         WP.row      = S.PnltCurrent.row;
         WP.column   = S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
-        WP.text = { 'Synchronized MonCam recording'};
-        WP.tip = {  [   'Synchronized Monitoring Cameras recording\n'...
+        WP.text = { 'Preview Switch', 'Sync Rec'};
+        WP.tip = {  'Preview Switch',...
+                    [   'Synchronized Monitoring Cameras recording\n'...
                         'including both Animal Monitor & Pupillometry']};
-        WP.inputOptions = {'NO', 'Pupil ONLY', 'Pupil & Body'};
-        WP.inputDefault = 1;
+        WP.inputOptions = { 'ON', 'OFF', '';...
+                            'NO', 'Pupil', 'Both'};
+        WP.inputDefault = [1 1];
         Panelette(S, WP, 'Xin');
-        Xin.UI.H.hMon_SyncRec_Rocker =     	Xin.UI.H0.Panelette{WP.row,WP.column}.hRocker{1};
-        set(Xin.UI.H.hMon_SyncRec_Rocker, 'Tag',  'hMon_SyncRec_Rocker');
+        Xin.UI.H.hMon_PreviewSwitch_Rocker =   	Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{1};
+        Xin.UI.H.hMon_SyncRec_Rocker =          Xin.UI.H0.Panelette{WP.row,WP.column}.hToggle{2};
+        set(Xin.UI.H.hMon_PreviewSwitch_Rocker, 'Tag', 'hMon_PreviewSwitch_Rocker');
+        set(Xin.UI.H.hMon_SyncRec_Rocker,       'Tag',  'hMon_SyncRec_Rocker');
         clear WP;
+        hc = get(Xin.UI.H.hVol_DisplayMode_Rocker, 'children');
+        set(hc(2), 'Enable', 'inactive');
+
         
 Xin.UI.FigPGC(3).hImage =                       Xin.UI.H0.hImage;
 Xin.UI.FigPGC(3).hImageHide =                   Xin.UI.H0.hImageHide;

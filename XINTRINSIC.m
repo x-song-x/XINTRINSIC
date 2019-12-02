@@ -81,16 +81,21 @@ set(Xin.UI.H.hSys_CameraLensAperture_PotenSlider,	'Callback', [Xin.D.Sys.Name, '
 set(Xin.UI.H.hSys_CameraLensAperture_PotenEdit,     'Callback', [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hMky_ID_Toggle1,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_ID_Toggle2,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
+set(Xin.UI.H.hMky_ID_Toggle3,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
+set(Xin.UI.H.hMky_ID_Toggle4,           'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Toggle'')']);
 set(Xin.UI.H.hMky_Side_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hMky_Prep_Rocker,          'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hExp_Depth_PotenSlider,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hExp_Depth_PotenEdit,      'Callback',             [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hExp_RotationBPA_PotenSlider,	'Callback',         [Xin.D.Sys.Name, '(''GUI_Poten'')']);
+set(Xin.UI.H.hExp_RotationBPA_PotenEdit,	'Callback',         [Xin.D.Sys.Name, '(''GUI_Poten'')']);
 set(Xin.UI.H.hSes_CycleNumTotal_Edit,	'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_AddAtts_Edit,         'Callback',             [Xin.D.Sys.Name, '(''GUI_Edit'')']);
 set(Xin.UI.H.hSes_TrlOrder_Rocker,      'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hSes_Load_Momentary,       'Callback',             [Xin.D.Sys.Name, '(''Ses_Load'')']);
 set(Xin.UI.H.hSes_Start_Momentary,      'Callback',             [Xin.D.Sys.Name, '(''Ses_Start'')']);
 set(Xin.UI.H.hVol_DisplayMode_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hVol_DisplayRef_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 set(Xin.UI.H.hMon_Pupillometry_Momentary,'callback',            [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 set(Xin.UI.H.hMon_SyncRec_Rocker,       'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
@@ -100,6 +105,7 @@ GUI_Rocker( 'hSys_LightConfig_Rocker',      'Koehler + PBS');
 GUI_Poten(	'hSys_LightDiffuser_Poten',     Xin.D.Sys.Light.Diffuser);
 GUI_Poten(	'hSys_CameraLensAngle_Poten',   Xin.D.Sys.CameraLens.Angle);
 GUI_Poten(	'hSys_CameraLensAperture_Poten',Xin.D.Sys.CameraLens.Aperture);
+GUI_Toggle( 'hMky_ID_Toggle',               Xin.D.Mky.Lists.ID{1});
 GUI_Rocker( 'hMky_Side_Rocker',             Xin.D.Mky.Side);
 GUI_Rocker( 'hMky_Prep_Rocker',             Xin.D.Mky.Prep);
 GUI_Poten(	'hExp_Depth_Poten',             Xin.D.Exp.Depth);
@@ -241,11 +247,30 @@ function GUI_Rocker(varargin)
                         num2str(Xin.D.Sys.PointGreyCam(3).PreviewClipROI) '"\r\n'];
                 otherwise
             end 
+        case 'hVol_DisplayRef_Rocker'
+            switch js
+                case 1          % Load      
+                    [Xin.D.Ses.DisplayRefImageFile, Xin.D.Ses.DisplayRefImageDir, FilterIndex] = ...
+                        uigetfile('.tif','Select a display reference ''TIF'' File',...
+                        [Xin.D.Sys.SoundDir, 'test.wav']);
+                    RawRefImage = imread([Xin.D.Ses.DisplayRefImageDir Xin.D.Ses.DisplayRefImageFile]);
+                  	Xin.D.Sys.PointGreyCam(3).DisplayRefImage = ...
+                        uint8(255/65535*imresize(RawRefImage, size( Xin.D.Sys.PointGreyCam(3).DispImg)));    
+                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDisplay Ref Image loaded\r\n'];
+                    GUI_Rocker('hVol_DisplayRef_Rocker', 'Ref');
+                case 2          % Disp Ref                         
+                    Xin.D.Sys.PointGreyCam(3).PreviewRef = 1;
+                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDisplay Ref Image displaying\r\n'];
+                case 3          % Disp Raw                     
+                    Xin.D.Sys.PointGreyCam(3).PreviewRef = 0;
+                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayRef\tDo not display a Preview Ref\r\n'];
+                otherwise
+            end 
         case 'hMon_SyncRec_Rocker'
             switch val
                 case 'No'
-                        Xin.D.Ses.MonitoringCams =  0;
-                case 'Pupil ONLY'
+                	Xin.D.Ses.MonitoringCams =  0;
+                case 'Pupil'
                     if      ~isfield(Xin.UI.FigPGC(1), 'hFig'); SetupFigurePointGrey(1);
                     elseif   isempty(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
                     elseif  ~isvalid(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
@@ -254,7 +279,7 @@ function GUI_Rocker(varargin)
                                 'Pupillometry camera synchronized with the ',...
                                 'main camera as well']);
                  	Xin.D.Ses.MonitoringCams =  1;
-                case 'Pupil & Body'   
+                case 'Both'   
                     if      ~isfield(Xin.UI.FigPGC(1), 'hFig'); SetupFigurePointGrey(1);
                     elseif   isempty(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
                     elseif  ~isvalid(Xin.UI.FigPGC(1).hFig);    SetupFigurePointGrey(1);
@@ -288,17 +313,23 @@ function GUI_Toggle(varargin)
         val =       varargin{2};
     end    
     %% Update GUI
-    eval(['h{1} = Xin.UI.H.', label(1:end-1) '1;'])
-    eval(['h{2} = Xin.UI.H.', label(1:end-1) '2;'])   
-	hc{1}.h =   get(h{1}, 'Children');
-	hc{2}.h =   get(h{2}, 'Children');
+    switch label(1:end-1)
+        case 'hSys_LightSource_Toggle'; Ttotal = 2;
+        case 'hMky_ID_Toggle';          Ttotal = 4;
+        otherwise
+             disp(['GUI_Toggle tag: ', label(1:end-5), 'not recognized!']);
+    end
+    for i = 1:Ttotal
+        eval([ 'h{', num2str(i), '} = Xin.UI.H.', label(1:end-1), num2str(i), ';'])  
+        hc{i}.h =   get(h{i}, 'Children');
+    end
     is = 0;     js = 0;
-  	for i = 1:2
+  	for i = 1:Ttotal
         for j = 1:3
             if strcmp( get(hc{i}.h(j), 'string'), val )
                 is = i; js = j;
                 set(h{i},   'SelectedObject', hc{i}.h(j) );
-                set(h{3-i}, 'SelectedObject', '');
+                set(h{Ttotal+1-i}, 'SelectedObject', '');
                 set(hc{i}.h(j),	'backgroundcolor', Xin.UI.C.SelectB);
             else                
                 set(hc{i}.h(j),	'backgroundcolor', Xin.UI.C.TextBG);
@@ -386,7 +417,14 @@ function GUI_Poten(varargin)
             value = Xin.D.Exp.Depth;
             set(hEdit,      'string',   sprintf('%d turn',value));            
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_Depth\tupdated as: '...
-                num2str(Xin.D.Exp.Depth) ' LT1 turns \r\n'];      
+                num2str(Xin.D.Exp.Depth) ' LT1 turns \r\n'];     
+        case 'hExp_RotationBPA'        
+            [~, i] = min(abs(Xin.D.Exp.RotationBPAs - value));
+            Xin.D.Exp.RotationBPA = Xin.D.Exp.RotationBPAs(i);
+            value = Xin.D.Exp.RotationBPA;
+            set(hEdit,      'string',   sprintf('%3.1fº',value));            
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_RotationBPA\tupdated as: '...
+                num2str(Xin.D.Exp.RotationBPA) ' º \r\n'];      
         otherwise
              disp('GUI_Poten tag not recognized!');            
 	end
