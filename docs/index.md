@@ -1,9 +1,6 @@
 ## Introduction 
 
-XINTRINSIC (cross[X]-linear polarization enhanced INTRINSIC imaging) is an imaging approach developed to image through the intact skull in marmoset monkeys and obtain detailed functional maps in the cortex. XINTRINSIC is developed and maintained by Dr. Xindong Song from the [Auditory Neurophysiology Laboratory (Wang Lab)] (https://wanglab.johnshopkins.edu/lab/WangLabWebsite/index.html) in Johns Hopkins. The current webpage 
-
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+XINTRINSIC (cross[X]-linear polarization enhanced INTRINSIC imaging) is an imaging approach developed to image through the intact skull in marmoset monkeys and obtain detailed functional maps in the cortex. XINTRINSIC is developed and maintained by Dr. Xindong Song from the [Auditory Neurophysiology Laboratory (Wang Lab)](https://wanglab.johnshopkins.edu/lab/WangLabWebsite/index.html) in Johns Hopkins. The current webpage shows a list of code and notes for the ease to replicate our approach. Discussions and comments are welcome through GitHub.
 
 ### Optical Design and Notes
 
