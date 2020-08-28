@@ -1,11 +1,11 @@
-## XINTRINSIC: cross(X)-linear polarization enhanced INTRINSIC imaging 
+## Introduction 
 
-You can use the [editor on GitHub](https://github.com/x-song-x/XINTRINSIC/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+XINTRINSIC (cross[X]-linear polarization enhanced INTRINSIC imaging) is an imaging approach developed to image through the intact skull in marmoset monkeys and obtain detailed functional maps in the cortex. 
 
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+### Optical Design and Notes
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 <iframe src="https://onedrive.live.com/embed?cid=0B62C29AB2D2652F&resid=B62C29AB2D2652F%21278772&authkey=ADcZ35g6KBcWFqI" width="98" height="120" frameborder="0" scrolling="no"></iframe>
