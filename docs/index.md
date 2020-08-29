@@ -8,7 +8,7 @@ For the detailed part list and design notes, please visit my OneNote Notebook:
 <iframe src="https://onedrive.live.com/embed?cid=0B62C29AB2D2652F&resid=B62C29AB2D2652F%21278772&authkey=ADcZ35g6KBcWFqI" width="98" height="120" frameborder="0" scrolling="no"></iframe>
 
 ### Code
-
+All XINTRINSIC functions were implemented in Matlab
 The following code repositories are XINTRINSIC.
 - [XINTRINIC](https://github.com/x-song-x/XINTRINSIC)
 - [ChKShared](https://github.com/x-song-x/ChKshared)
