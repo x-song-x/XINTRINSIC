@@ -10,4 +10,7 @@ XINTRINSIC recording and analysis routines are implemented in Matlab
 - The following code repositories are needed for XINTRINSIC recording
   - [XINTRINIC](https://github.com/x-song-x/XINTRINSIC): the main function
   - [ChKShared](https://github.com/x-song-x/ChKshared): a collection of shared functions with other projects
-- [fluffy-goggles](https://github.com/x-song-x/fluffy-goggles): the analysis routine
+- The following code repositories are needed for XINTRINSIC synced stimulation delivery & data analysis routines
+  - [fluffy-goggles](https://github.com/x-song-x/fluffy-goggles): 
+    - XinStimEx: the analysis routine
+    - XinStimEx: the analysis routine
