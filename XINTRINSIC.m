@@ -622,6 +622,7 @@ function Ses_Start
     Xin.D.Ses.Save.MkyPrep =            Xin.D.Mky.Prep;
     Xin.D.Ses.Save.ExpDateStr =         Xin.D.Exp.DateStr;
     Xin.D.Ses.Save.ExpDepth =           Xin.D.Exp.Depth;
+    Xin.D.Ses.Save.ExpRotationBPA =     Xin.D.Exp.RotationBPA;
     Xin.D.Ses.Save.SesSoundFile =       Xin.D.Ses.Load.SoundFile;
     Xin.D.Ses.Save.SesSoundDir =        Xin.D.Ses.Load.SoundDir;    
     Xin.D.Ses.Save.SesSoundTitle =      Xin.D.Ses.Load.SoundTitle;
@@ -863,8 +864,10 @@ function Cam_CleanUp
             %% Clean Up Figure and Data
             try
                 delete(Xin.UI.H0.hFig);
-                if isfield(Xin.UI.FigPGC(1), 'hFig')
-                    delete(Xin.UI.FigPGC(1).hFig);
+                for i =1:(length(Xin.D.Sys.PointGreyCam)-1)
+                    if isfield(Xin.UI.FigPGC(i), 'hFig')
+                        delete(Xin.UI.FigPGC(i).hFig);
+                    end
                 end
             catch
                 warndlg('Can not delete the UI Figure');

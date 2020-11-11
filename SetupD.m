@@ -351,10 +351,10 @@ end
 %% D.Mky (Monkey)
 for d = 1
 	%%%%%%%%%%%%%%%%%%%%%%% Monkey 
-    Xin.D.Mky.Lists.ID =            {   'M00x',     'M96B',     'M111Z';
-                                        'M8E',      'M126D',    'M15E';
-                                        'M7E',      '',         'M44D';
-                                        'M117B',    'M29A',     ''     };
+    Xin.D.Mky.Lists.ID =            {   'M00x',     'M96B',     'M102D';
+                                        'M101D',	'',    '';
+                                        'M126D',    'M117B',	'M44D';
+                                        'M15E',     'M9G',	''     };
     Xin.D.Mky.Lists.Side =          {'LEFT', 'RIGHT', ''};    
     Xin.D.Mky.Lists.Prep =          {'Win', 'Skull', ''};
     
