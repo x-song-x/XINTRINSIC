@@ -6,9 +6,7 @@ website testing
 
 # System Design Notes
 For the detailed part list and design notes, please visit my OneNote Notebook:
-
-![GitHub Logo](/images/logo.png)
-![XINTRINSIC](https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE2yJZy?ver=066d&q=90&h=40&b=%23FFFFFFFF&aim=true)
+![XINTRINSIC](https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE2yJZy?ver=066d&q=90&h=40&b=%23FFFFFFFF&aim=true) [XINTRINSIC](https://onedrive.live.com/embed?cid=0B62C29AB2D2652F&resid=B62C29AB2D2652F%21278772&authkey=ADcZ35g6KBcWFqI)
 
 # Code
 XINTRINSIC recording and analysis routines are implemented in Matlab
@@ -24,4 +22,4 @@ XINTRINSIC recording and analysis routines are implemented in Matlab
 Please visit our project discussion panel [here](https://github.com/x-song-x/XINTRINSIC/discussions)
 
 
-<iframe src="https://onedrive.live.com/embed?cid=0B62C29AB2D2652F&resid=B62C29AB2D2652F%21278772&authkey=ADcZ35g6KBcWFqI" width="98" height="120" frameborder="0" scrolling="no"></iframe>
+<iframe src="" width="98" height="120" frameborder="0" scrolling="no"></iframe>
