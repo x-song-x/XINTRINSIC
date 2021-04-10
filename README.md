@@ -22,5 +22,3 @@ XINTRINSIC recording and analysis routines are implemented in Matlab
 # Discussions and Questions Are Welcome 
 Please visit our project discussion panel [here](https://github.com/x-song-x/XINTRINSIC/discussions)
 
-
-<iframe src="" width="98" height="120" frameborder="0" scrolling="no"></iframe>
