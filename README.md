@@ -8,7 +8,7 @@ website testing
 For the detailed part list and design notes, please visit my OneNote Notebook:
 
 ![GitHub Logo](/images/logo.png)
-![image](user-images.githubusercontent.com/39066400/114279101-eeae2600-9a00-11eb-8000-f56719e064e8.png)
+![XINTRINSIC](https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE2yJZy?ver=066d&q=90&h=40&b=%23FFFFFFFF&aim=true)
 
 # Code
 XINTRINSIC recording and analysis routines are implemented in Matlab
