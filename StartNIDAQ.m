@@ -113,9 +113,16 @@ NI = Xin.D.Sys.NIDAQ;
         T.trigger.triggerSource,            T.trigger.triggerEdge);
     Xin.HW.NI.T.hTask_CO_TrigFrame.start();
  
-%% Count Down   
-    uiwait( warndlg([	'About to start imaging recording, ',...
-                        'start the slave matlab code now if needed'])   );
+%% Count Down 
+    if Xin.D.Sys.TDT_PA5_OnOff
+        text =	[	'\fontsize{15} About to start imaging recording, \newline',...
+                    'Start the slave matlab code now if needed'];
+    else
+        text =  [	'\fontsize{40}Setup PA5 attenuation manually before start! \newline',...
+                    'Run the slave matlab code now if needed'];
+    end
+    uiwait( warndlg( text, 'start NIDAQ and record',...
+                    struct('WindowStyle','modal','Interpreter','tex')   ) );
     hWaitbar =      waitbar(0, 'The recording will be triggered'); 
     tWait =         3;
     tStart =        tic;

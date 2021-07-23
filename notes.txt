@@ -1,18 +1,20 @@
 Recording, Next Step:
-	panalette momentary's lower button's tip does not display
-	Pre-randomized session option
-	Load & display a reference frame for adjusting the FOV
+	Re-randomized if stays and restarts
+	Synchronization failure detection
+		double check on PC timing. 
+		record the largest Ses Frame Buffer size
+		check on the frame number.
+	Turn Maripets off option
 	TDT PA5 confirmation
 
 Recording, Long Term:
 	Matlab hard restart with too high PT camera max shutter value
-	Occational file system window freezing during sound loading
+	Occational file system window freezing during sound loading (path on server problem?)
 	Online display of trial analysis results
-	Cancel the session with patial session data save
+	Cancel the session with patial session data save ?
 
 Analysis:
-	Release file handles after finish
-	Cancel the video palyback
+	Statistical maps
 	FFT base line model and correction
 	
 

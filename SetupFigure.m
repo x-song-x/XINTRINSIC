@@ -51,8 +51,8 @@ Xin.UI.C = S.Color;
     S.PaneletteTitle = 18;
 
     % Image Scale
-    S.AxesImageHeight =     Xin.D.Sys.PointGreyCam(3).DispHeight;
-    S.AxesImageWidth =      Xin.D.Sys.PointGreyCam(3).DispWidth;
+    S.AxesImageWidth =      Xin.D.Sys.Camera.DispWidth;
+    S.AxesImageHeight =     Xin.D.Sys.Camera.DispHeight;
     S.AxesHistHeight =      256;
     
     % Image Panel Scale
@@ -98,10 +98,13 @@ Xin.UI.C = S.Color;
             'ZLimMode',     'Manual',...
             'CLimMode',     'Manual',...
             'ALimMode',     'Manual');
-%         Xin.UI.H0.hImage = imshow(Xin.D.Sys.PointGreyCam(3).DispImg,...
-%             'parent',       Xin.UI.H0.hAxesImage); 
-        Xin.UI.H0.hImage = image(Xin.D.Sys.PointGreyCam(3).DispImg,...
+        Xin.UI.H0.hImage = image(Xin.D.Sys.Camera.DispImg,...
             'parent',       Xin.UI.H0.hAxesImage); 
+        Xin.UI.FigPGC(3).hText = text(0, 0, {' 0', ' 0', ' 0'},...
+            'parent',       Xin.UI.H0.hAxesImage,...
+            'Color',        [1 1 1],...
+            'VerticalAlignment',    'Top',...
+            'HorizontalAlignment',  'Left');  
         
         % create the Hist Axes
         Xin.UI.H0.hAxesHist = axes(...
@@ -119,20 +122,20 @@ Xin.UI.C = S.Color;
             'NextPlot',     'Add',...
             'View',         [90 90],...
             'XColor',       S.Color.FG,...            
-            'XLim',         [1 length(Xin.D.Sys.PointGreyCam(3).DispHistMax)],...
+            'XLim',         [1 Xin.D.Sys.Camera.DispHeight],...
             'XTick',        [],...
             'YColor',       S.Color.FG,...
             'YGrid',        'On',...
             'YLim',         [0 255],...
             'YTick',        0:32:224,...
             'YTickLabel',   {});
-     	Xin.UI.H0.hHistMax =    plot(Xin.D.Sys.PointGreyCam(3).DispHistMax,     '-',...
+     	Xin.UI.H0.hHistMax =    plot(Xin.D.Sys.Camera.DispHistMax,	'-',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG); 
-     	Xin.UI.H0.hHistMean =   plot(Xin.D.Sys.PointGreyCam(3).DispHistMean,	'.-',...
+     	Xin.UI.H0.hHistMean =   plot(Xin.D.Sys.Camera.DispHistMean,	'.-',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG);                     
-     	Xin.UI.H0.hHistMin =    plot(Xin.D.Sys.PointGreyCam(3).DispHistMin,     '--',...
+     	Xin.UI.H0.hHistMin =    plot(Xin.D.Sys.Camera.DispHistMin,	'--',...
             'parent',       Xin.UI.H0.hAxesHist,...
             'Color',        S.Color.FG); 
                     
@@ -310,10 +313,10 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(3).ShutterRange), '] (ms)']};
-        WP.tip =    {   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.PointGreyCam(3).ShutterRange), '] (ms)']};
-        WP.inputValue =     Xin.D.Sys.PointGreyCam(3).Shutter;
-        WP.inputRange =     Xin.D.Sys.PointGreyCam(3).ShutterRange;
+        WP.text = 	{   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.Camera.ShutterRange), '] (ms)']};
+        WP.tip =    {   ['Cam shutter: [', sprintf('%4.2f ', Xin.D.Sys.Camera.ShutterRange), '] (ms)']};
+        WP.inputValue =     Xin.D.Sys.Camera.Shutter;
+        WP.inputRange =     Xin.D.Sys.Camera.ShutterRange;
         WP.inputSlideStep=  [0.01 0.1];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_CamShutter_PotenSlider =  	Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
@@ -326,10 +329,10 @@ S.PnltCurrent.row = 3;      S.PnltCurrent.column = 1;
         WP.row =        S.PnltCurrent.row;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;  
-        WP.text = 	{   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(3).GainRange), '] (dB)']};
-        WP.tip =    {   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.PointGreyCam(3).GainRange), '] (dB)']};
-        WP.inputValue =     Xin.D.Sys.PointGreyCam(3).Gain;
-        WP.inputRange =     Xin.D.Sys.PointGreyCam(3).GainRange;
+        WP.text = 	{   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.Camera.GainRange), '] (dB)']};
+        WP.tip =    {   ['Cam gain: [', sprintf('%5.3f ', Xin.D.Sys.Camera.GainRange), '] (dB)']};
+        WP.inputValue =     Xin.D.Sys.Camera.Gain;
+        WP.inputRange =     Xin.D.Sys.Camera.GainRange;
         WP.inputSlideStep=  [0.01 0.1];
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hSys_CamGain_PotenSlider =        Xin.UI.H0.Panelette{WP.row,WP.column}.hSlider{1};
@@ -410,14 +413,15 @@ S.PnltCurrent.row = 2;      S.PnltCurrent.column = 1;
         WP.column =     S.PnltCurrent.column;
             S.PnltCurrent.column = S.PnltCurrent.column + 1;
         WP.text = { 'Take a reference image for the Experiment',...
-                    ['Experiment date: ', Xin.D.Exp.DateStr]};
-        WP.tip = {[ 'Take a reference image for the Experiment',...
-                    ''],...
-                  [ 'Experiment date: ', Xin.D.Exp.DateStr] };
-        WP.inputEnable = {'on','off'};
+                    'Turn the reference coordinates ON/OFF'};
+        WP.tip = {  'Take a reference image for the Experiment',...
+                    'Turn the reference coordinates ON/OFF' };
+        WP.inputEnable = {'on','on'};
         Panelette(S, WP, 'Xin');
         Xin.UI.H.hExp_RefImage_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{1}; 
+        Xin.UI.H.hExp_RefCoord_Momentary =	Xin.UI.H0.Panelette{WP.row,WP.column}.hMomentary{2}; 
         set(Xin.UI.H.hExp_RefImage_Momentary,	'tag', 'hExp_RefImage_Momentary');
+        set(Xin.UI.H.hExp_RefCoord_Momentary,	'tag', 'hExp_RefCoord_Momentary');
         clear WP;         
         
     WP.name = 'Exp Depth';
@@ -793,8 +797,8 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
                     'Previewing TimeStamp [HH:MM:SS.S]'};
         WP.tip = {	'Previewing frame rate',...
                     'Previewing TimeStamp [HH:MM:SS.S]'};
-        WP.inputValue = {   Xin.D.Sys.PointGreyCam(3).PreviewStrFR,...
-                            Xin.D.Sys.PointGreyCam(3).PreviewStrTS};
+        WP.inputValue = {   Xin.D.Sys.Camera.PreviewStrFR,...
+                            Xin.D.Sys.Camera.PreviewStrTS};
         WP.inputFormat = {'%s','%s'};    
         WP.inputEnable = {'off','off'};
         Panelette(S, WP, 'Xin');    
@@ -847,33 +851,6 @@ S.PnltCurrent.row = 1;      S.PnltCurrent.column = 8;
         clear WP;
         hc = get(Xin.UI.H.hVol_DisplayMode_Rocker, 'children');
         set(hc(2), 'Enable', 'inactive');
-
-        
-Xin.UI.FigPGC(3).hImage =                       Xin.UI.H0.hImage;
-Xin.UI.FigPGC(3).hImageHide =                   Xin.UI.H0.hImageHide;
-Xin.UI.FigPGC(3).CP.hMon_CamPreviewFR_Edit =    Xin.UI.H.hVol_CamPreviewFR_Edit;
-Xin.UI.FigPGC(3).CP.hMon_CamPreviewTS_Edit =    Xin.UI.H.hVol_CamPreviewTS_Edit;
-Xin.UI.FigPGC(3).hHistMax =                     Xin.UI.H0.hHistMax;
-Xin.UI.FigPGC(3).hHistMean =                    Xin.UI.H0.hHistMean; 
-Xin.UI.FigPGC(3).hHistMin =                     Xin.UI.H0.hHistMin; 
-Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider =   Xin.UI.H.hSys_CamShutter_PotenSlider;
-Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit =     Xin.UI.H.hSys_CamShutter_PotenEdit;
-Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider =      Xin.UI.H.hSys_CamGain_PotenSlider;
-Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit =        Xin.UI.H.hSys_CamGain_PotenEdit;
-Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider =	Xin.UI.H.hSys_CamDispGain_PotenSlider;
-Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit =	Xin.UI.H.hSys_CamDispGain_PotenEdit;
-Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary =       Xin.UI.H.hExp_RefImage_Momentary;
-Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker =        Xin.UI.H.hSes_CamTrigger_Rocker;
-Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker =     Xin.UI.H.hMon_PreviewSwitch_Rocker;
-set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider,	'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit,    	'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider,     	'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit,      	'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider,	'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit,     'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary,        'UserData',	3);
-set(Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker,         'UserData', 3);
-set(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker,      'UserData', 3);
 
 %% Turn the JAVA LookAndFeel Scheme on "Windows"
 %     javax.swing.UIManager.setLookAndFeel('com.sun.java.swing.plaf.windows.WindowsLookAndFeel');

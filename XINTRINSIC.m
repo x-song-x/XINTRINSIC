@@ -31,40 +31,125 @@ clear global;
 global Xin;
 
 %% INITIALIZATION
-Xin.D.Sys.Name =        mfilename;          % Grab the current script's name
-SetupD;                                     % Initiate parameters
+Xin.D.Sys.NameFull =	mfilename('fullpath');	% Grab the current script's name
+[Xin.D.Sys.NamePath, Xin.D.Sys.Name, ~] = fileparts(Xin.D.Sys.NameFull);
+cd(Xin.D.Sys.NamePath);
+    SetupD;                                 % Initiate parameters
 [idx,tf] = listdlg(	'ListString',       Xin.D.Sys.Configurations.SystemOptionName,...
                 	'SelectionMode',    'single',...
-                    'ListSize',         [350 80],...
-                    'InitialValue',     2,...
+                    'ListSize',         [350 180],...
+                    'InitialValue',     3,...
                     'Name',             'XINTRINSIC System Configuration',...
                     'PromptString',     'Select a system configuration');
-if tf == 0
-    idx = 2;    % the Xin 2.0
+if tf == 0  % cancelled in the GUI
+    clear Xin;
+    clear global;
+	return;
 end
+        Xin.D.Sys.TDT_PA5_OnOff = Xin.D.Sys.Configurations.TDT_PA5_OnOff{idx};
 switch Xin.D.Sys.Configurations.CameraDriver{idx}
     case 'PointGrey'
-        Xin.D.Sys.PointGreyCam(3).SerialNumber = ...
-            Xin.D.Sys.Configurations.CameraSerialNumber{idx};
-%     case 'Thorlabs'
-    otherwise
+        % Setup PointGrey Cams
+        Xin.D.Sys.PointGreyCam(3).SerialNumber = Xin.D.Sys.Configurations.CameraSerialNumber{idx};  
+                SetupPointGreyCams;
+        % Xin.D.Sys.Camera related
+        Xin.D.Sys.Camera.MainCam =          'PointGrey';
+        Xin.D.Sys.Camera.DeviceName =       Xin.D.Sys.PointGreyCam(3).DeviceName;
+        Xin.D.Sys.Camera.MainFrameRate =    Xin.D.Sys.PointGreyCam(3).FrameRate;
+        Xin.D.Sys.Camera.Resolution =       [1200 1920];
+        Xin.D.Sys.Camera.Shutter =      Xin.D.Sys.PointGreyCam(3).Shutter;
+        Xin.D.Sys.Camera.ShutterRange = Xin.D.Sys.PointGreyCam(3).ShutterRange;
+        Xin.D.Sys.Camera.Gain =         Xin.D.Sys.PointGreyCam(3).Gain;
+        Xin.D.Sys.Camera.GainRange =    Xin.D.Sys.PointGreyCam(3).GainRange;
+        Xin.D.Sys.Camera.PreviewStrFR = Xin.D.Sys.PointGreyCam(3).PreviewStrFR;
+        Xin.D.Sys.Camera.PreviewStrTS = Xin.D.Sys.PointGreyCam(3).PreviewStrTS;
+        % GUI related
+                SetupFigure;    set( Xin.UI.H0.hFig,	'Visible',  'off');	drawnow;	
+        Xin.UI.FigPGC(3).hImage =                       Xin.UI.H0.hImage;
+        Xin.UI.FigPGC(3).hImageHide =                   Xin.UI.H0.hImageHide;
+        Xin.UI.FigPGC(3).CP.hMon_CamPreviewFR_Edit =    Xin.UI.H.hVol_CamPreviewFR_Edit;
+        Xin.UI.FigPGC(3).CP.hMon_CamPreviewTS_Edit =    Xin.UI.H.hVol_CamPreviewTS_Edit;
+        Xin.UI.FigPGC(3).hHistMax =                     Xin.UI.H0.hHistMax;
+        Xin.UI.FigPGC(3).hHistMean =                    Xin.UI.H0.hHistMean; 
+        Xin.UI.FigPGC(3).hHistMin =                     Xin.UI.H0.hHistMin; 
+        Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider =   Xin.UI.H.hSys_CamShutter_PotenSlider;
+        Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit =     Xin.UI.H.hSys_CamShutter_PotenEdit;
+        Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider =      Xin.UI.H.hSys_CamGain_PotenSlider;
+        Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit =        Xin.UI.H.hSys_CamGain_PotenEdit;
+        Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider =	Xin.UI.H.hSys_CamDispGain_PotenSlider;
+        Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit =	Xin.UI.H.hSys_CamDispGain_PotenEdit;
+        Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary =       Xin.UI.H.hExp_RefImage_Momentary;
+        Xin.UI.FigPGC(3).CP.hExp_RefCoord_Momentary =       Xin.UI.H.hExp_RefCoord_Momentary;
+        Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker =        Xin.UI.H.hSes_CamTrigger_Rocker;
+        Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker =     Xin.UI.H.hMon_PreviewSwitch_Rocker;
+        set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenSlider,	'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSys_CamShutter_PotenEdit,    	'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenSlider,     	'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSys_CamGain_PotenEdit,      	'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenSlider,	'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSys_CamDispGain_PotenEdit,     'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hExp_RefImage_Momentary,        'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hExp_RefCoord_Momentary,        'UserData',	3);
+        set(Xin.UI.FigPGC(3).CP.hSes_CamTrigger_Rocker,         'UserData', 3);
+        set(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker,      'UserData', 3); 	
+        hc =   get(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker, 'Children');
+        for i = 1:3
+            set(hc(i), 'Enable',    'inactive');
+        end
+        % Initiate the Main Camera
+            CtrlPointGreyCams('InitializeCallbacks', 3);     
+            CtrlPointGreyCams('Cam_Shutter',	3, Xin.D.Sys.PointGreyCam(3).Shutter);
+            CtrlPointGreyCams('Cam_Gain',       3, Xin.D.Sys.PointGreyCam(3).Gain); 
+            CtrlPointGreyCams('Cam_DispGain',	3, Xin.D.Sys.PointGreyCam(3).DispGainNum);
+                                set( Xin.UI.H0.hFig,	'Visible',  'on');  drawnow;    
+            CtrlPointGreyCams('Preview_Switch', 3, 'ON');     
+    case 'Thorlabs'
+        % Setup PointGrey Cams
+        Xin.D.Sys.PointGreyCam = Xin.D.Sys.PointGreyCam(1:2);   % get off the 3rd PT camera
+                SetupPointGreyCams;
+        % Xin.D.Sys.Camera related
+        Xin.D.Sys.Camera.MainCam =          'Thorlabs';
+        Xin.D.Sys.Camera.DeviceName =       Xin.D.Sys.ThorlabsSciCam(1).DeviceName;
+        Xin.D.Sys.Camera.MainFrameRate =    Xin.D.Sys.ThorlabsSciCam(1).FrameRate;
+        Xin.D.Sys.Camera.Resolution =       [   Xin.D.Sys.ThorlabsSciCam(1).ROIHeight, ...
+                                                Xin.D.Sys.ThorlabsSciCam(1).ROIWidth ];                                
+        Xin.D.Sys.Camera.Shutter =      Xin.D.Sys.ThorlabsSciCam(1).ExposureTime_ms;
+        Xin.D.Sys.Camera.ShutterRange = [0 1/Xin.D.Sys.Camera.MainFrameRate*1000-Xin.D.Sys.Camera.MainShutterResv];
+        Xin.D.Sys.Camera.Gain =         0;
+        Xin.D.Sys.Camera.GainRange =    [0 30];
+        Xin.D.Sys.Camera.PreviewStrFR = 'PrevStrFR';
+        Xin.D.Sys.Camera.PreviewStrTS = 'PrevStrTS';
+        % GUI related
+            SetupFigure;    set( Xin.UI.H0.hFig,	'Visible',  'off'); drawnow;	
+        set(Xin.UI.H.hSys_CamGain_PotenSlider,  'Enable', 'off');
+        set(Xin.UI.H.hSys_CamGain_PotenEdit,    'Enable', 'off');
+        Xin.UI.FigTLSC(1).CP.hSys_CamShutter_PotenSlider =	Xin.UI.H.hSys_CamShutter_PotenSlider;
+        Xin.UI.FigTLSC(1).CP.hSys_CamShutter_PotenEdit =	Xin.UI.H.hSys_CamShutter_PotenEdit;
+        Xin.UI.FigTLSC(1).CP.hSys_CamDispGain_PotenSlider =	Xin.UI.H.hSys_CamDispGain_PotenSlider;
+        Xin.UI.FigTLSC(1).CP.hSys_CamDispGain_PotenEdit =	Xin.UI.H.hSys_CamDispGain_PotenEdit;
+        Xin.UI.FigTLSC(1).CP.hExp_RefImage_Momentary =      Xin.UI.H.hExp_RefImage_Momentary;
+        Xin.UI.FigTLSC(1).CP.hSes_CamTrigger_Rocker =       Xin.UI.H.hSes_CamTrigger_Rocker;
+        set(Xin.UI.FigTLSC(1).CP.hSys_CamShutter_PotenSlider,	'UserData',	1);
+        set(Xin.UI.FigTLSC(1).CP.hSys_CamShutter_PotenEdit,    	'UserData',	1);
+        set(Xin.UI.FigTLSC(1).CP.hSys_CamDispGain_PotenSlider,	'UserData',	1);
+        set(Xin.UI.FigTLSC(1).CP.hSys_CamDispGain_PotenEdit,	'UserData',	1);
+        set(Xin.UI.FigTLSC(1).CP.hExp_RefImage_Momentary,       'UserData',	1);
+        set(Xin.UI.FigTLSC(1).CP.hSes_CamTrigger_Rocker,        'UserData', 1);
+        % Initiate the Main Camera
+        Xin.D.Sys.ThorlabsSciCam(1).serialNumber = Xin.D.Sys.Configurations.CameraSerialNumber{idx};
+            SetupThorlabsSciCams;
+            CtrlThorlabsSciCams('InitializeCallbacks', 1);
+            CtrlThorlabsSciCams('Cam_Shutter',	1, Xin.D.Sys.ThorlabsSciCam(1).Shutter);
+            CtrlThorlabsSciCams('Cam_DispGain', 1, Xin.D.Sys.ThorlabsSciCam(1).DispGainNum);
+                                set( Xin.UI.H0.hFig,	'Visible',  'on');  drawnow;  
+%             GUI_Rocker( 'hMon_PreviewSwitch_Rocker',	'ON'); 
+    otherwise   
         errordlg('Camera Brand Not Supported Yet!')
         clear global;
-        return
-end     
-SetupTDTSys3PA5('Xin');
-SetupPointGreyCams;
-SetupFigure;                    set( Xin.UI.H0.hFig,	'Visible',  'on');
-    CtrlPointGreyCams('InitializeCallbacks', 3);     
-    CtrlPointGreyCams('Cam_Shutter',	3, Xin.D.Sys.PointGreyCam(3).Shutter);
-  	CtrlPointGreyCams('Cam_Gain',       3, Xin.D.Sys.PointGreyCam(3).Gain); 
-    CtrlPointGreyCams('Cam_DispGain',	3, Xin.D.Sys.PointGreyCam(3).DispGainNum);  
-                                set( Xin.UI.H0.hFig,	'Visible',  'on');    	
-pause(0.5);    
-  	CtrlPointGreyCams('Preview_Switch', 3, 'ON');   
-hc =   get(Xin.UI.FigPGC(3).CP.hMon_PreviewSwitch_Rocker, 'Children');
-for i = 1:3
-    set(hc(i), 'Enable',    'inactive');
+        return     
+end
+if Xin.D.Sys.TDT_PA5_OnOff
+            SetupTDTSys3PA5('Xin');  
 end
  
 %% SETUP GUI CALLBACKS
@@ -99,16 +184,28 @@ set(Xin.UI.H.hVol_DisplayRef_Rocker,	'SelectionChangeFcn',   [Xin.D.Sys.Name, '(
 set(Xin.UI.H.hMon_AnimalMon_Momentary,  'callback',             [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 set(Xin.UI.H.hMon_Pupillometry_Momentary,'callback',            [Xin.D.Sys.Name, '(''SetupFigurePointGrey'')']);
 set(Xin.UI.H.hMon_SyncRec_Rocker,       'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
+set(Xin.UI.H.hMon_PreviewSwitch_Rocker, 'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 
-GUI_Toggle( 'hSys_LightSource_Toggle',      'Green');
-GUI_Rocker( 'hSys_LightConfig_Rocker',      'Koehler + PBS');
-GUI_Poten(	'hSys_LightDiffuser_Poten',     Xin.D.Sys.Light.Diffuser);
-GUI_Poten(	'hSys_CameraLensAngle_Poten',   Xin.D.Sys.CameraLens.Angle);
-GUI_Poten(	'hSys_CameraLensAperture_Poten',Xin.D.Sys.CameraLens.Aperture);
-GUI_Toggle( 'hMky_ID_Toggle',               Xin.D.Mky.Lists.ID{1});
-GUI_Rocker( 'hMky_Side_Rocker',             Xin.D.Mky.Side);
-GUI_Rocker( 'hMky_Prep_Rocker',             Xin.D.Mky.Prep);
-GUI_Poten(	'hExp_Depth_Poten',             Xin.D.Exp.Depth);
+        GUI_Toggle( 'hSys_LightSource_Toggle',      'Green');
+        GUI_Rocker( 'hSys_LightConfig_Rocker',      'Koehler + PBS');
+        GUI_Poten(	'hSys_LightDiffuser_Poten',     Xin.D.Sys.Light.Diffuser);
+        GUI_Poten(	'hSys_CameraLensAngle_Poten',   Xin.D.Sys.CameraLens.Angle);
+        GUI_Poten(	'hSys_CameraLensAperture_Poten',Xin.D.Sys.CameraLens.Aperture);
+        GUI_Toggle( 'hMky_ID_Toggle',               Xin.D.Mky.Lists.ID{1});
+        GUI_Rocker( 'hMky_Side_Rocker',             Xin.D.Mky.Side);
+        GUI_Rocker( 'hMky_Prep_Rocker',             Xin.D.Mky.Prep);
+        GUI_Poten(	'hExp_Depth_Poten',             Xin.D.Exp.Depth);
+
+drawnow;
+
+pause(0.5);
+switch Xin.D.Sys.Camera.MainCam
+    case 'PointGrey'
+	case 'Thorlabs'
+        GUI_Rocker( 'hMon_PreviewSwitch_Rocker',	'OFF');
+%         CtrlThorlabsSciCams('SoftwareTriggerPreview', 1); 
+    otherwise        
+end     
 
 %% CALLBACK FUNCTIONS
 function flag = CheckRunning
@@ -232,37 +329,64 @@ function GUI_Rocker(varargin)
             switch js
                 case 1          % Draw ROI
                     axes(Xin.UI.H0.hAxesImage);
-                    Xin.D.Sys.PointGreyCam(3).ROI =     roipoly;    
-                    Xin.D.Sys.PointGreyCam(3).ROIi =    uint8(Xin.D.Sys.PointGreyCam(3).ROI);
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs'
+                            Xin.D.Sys.ThorlabsSciCam(1).ROI =	roipoly;    
+                            Xin.D.Sys.ThorlabsSciCam(1).ROIi =	uint8(Xin.D.Sys.ThorlabsSciCam(1).ROI);
+                        case 'PointGrey'
+                            Xin.D.Sys.PointGreyCam(3).ROI =     roipoly;    
+                            Xin.D.Sys.PointGreyCam(3).ROIi =    uint8(Xin.D.Sys.PointGreyCam(3).ROI);
+                    end
                     set(hc(2), 'Enable', 'on'); 
                     GUI_Rocker('hVol_DisplayMode_Rocker', 'ROI');
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tExp_SurROI\tExperiment surface ROI circled\r\n'];
                 case 2          % Disp ROI
-                    Xin.D.Sys.PointGreyCam(3).PreviewClipROI = 1;
-                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as"' ...
-                        num2str(Xin.D.Sys.PointGreyCam(3).PreviewClipROI) '"\r\n'];
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs';    Xin.D.Sys.ThorlabsSciCam(1).PreviewClipROI =	1;
+                        case 'PointGrey';   Xin.D.Sys.PointGreyCam(3).PreviewClipROI =      1;
+                    end
+                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as "1"\r\n'];
                 case 3          % Disp Full
-                    Xin.D.Sys.PointGreyCam(3).PreviewClipROI = 0;
-                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as"' ...
-                        num2str(Xin.D.Sys.PointGreyCam(3).PreviewClipROI) '"\r\n'];
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs';    Xin.D.Sys.ThorlabsSciCam(1).PreviewClipROI =	0;
+                        case 'PointGrey';   Xin.D.Sys.PointGreyCam(3).PreviewClipROI =      0;
+                    end
+                    msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDispClipROI was selected as "0"\r\n'];
                 otherwise
             end 
         case 'hVol_DisplayRef_Rocker'
             switch js
                 case 1          % Load      
-                    [Xin.D.Ses.DisplayRefImageFile, Xin.D.Ses.DisplayRefImageDir, FilterIndex] = ...
+                    [Xin.D.Ses.DisplayRefImageFile, Xin.D.Ses.DisplayRefImageDir, ~] = ...
                         uigetfile('.tif','Select a display reference ''TIF'' File',...
-                        [Xin.D.Sys.SoundDir, 'test.wav']);
+                        [Xin.D.Sys.SoundDir, 'test.tif']);
                     RawRefImage = imread([Xin.D.Ses.DisplayRefImageDir Xin.D.Ses.DisplayRefImageFile]);
-                  	Xin.D.Sys.PointGreyCam(3).DisplayRefImage = ...
-                        uint8(255/65535*imresize(RawRefImage, size( Xin.D.Sys.PointGreyCam(3).DispImg)));    
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs'
+                            Xin.D.Sys.ThorlabsSciCam(1).DisplayRefImage = Xin.D.Sys.ThorlabsSciCam(1).DispImg*0;
+                        	Xin.D.Sys.ThorlabsSciCam(1).DisplayRefImage(...
+                                    Xin.D.Sys.ThorlabsSciCam(1).DispHeightIndex,...
+                                    Xin.D.Sys.ThorlabsSciCam(1).DispWidthIndex) = ...
+                                uint8(255/65535*imresize(RawRefImage, [ ...
+                                    Xin.D.Sys.ThorlabsSciCam(1).pvRawHeight,...
+                                    Xin.D.Sys.ThorlabsSciCam(1).pvRawWidth])); 
+                        case 'PointGrey'
+                        	Xin.D.Sys.PointGreyCam(3).DisplayRefImage = ...
+                                uint8(255/65535*imresize(RawRefImage, size( Xin.D.Sys.PointGreyCam(3).DispImg))); 
+                    end   
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDisplay Ref Image loaded\r\n'];
                     GUI_Rocker('hVol_DisplayRef_Rocker', 'Ref');
-                case 2          % Disp Ref                         
-                    Xin.D.Sys.PointGreyCam(3).PreviewRef = 1;
+                case 2          % Disp Ref 
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs';    Xin.D.Sys.ThorlabsSciCam(1).PreviewRef =	1;
+                        case 'PointGrey';   Xin.D.Sys.PointGreyCam(3).PreviewRef =      1;
+                    end
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayMode\tDisplay Ref Image displaying\r\n'];
-                case 3          % Disp Raw                     
-                    Xin.D.Sys.PointGreyCam(3).PreviewRef = 0;
+                case 3          % Disp Raw     
+                    switch Xin.D.Sys.Camera.MainCam
+                        case 'Thorlabs';    Xin.D.Sys.ThorlabsSciCam(1).PreviewRef =	0;
+                        case 'PointGrey';   Xin.D.Sys.PointGreyCam(3).PreviewRef =      0;
+                    end
                     msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tVol_DisplayRef\tDo not display a Preview Ref\r\n'];
                 otherwise
             end 
@@ -295,6 +419,14 @@ function GUI_Rocker(varargin)
             end
             msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSes_MonitoringCams\tSession monitoring cams recording selected as: '...
                 val '\r\n']; 
+        case 'hMon_PreviewSwitch_Rocker'
+            switch val
+                case 'ON';  CtrlThorlabsSciCams('SoftwareTriggerPreview', 1); 
+                case 'OFF'; Xin.D.Sys.ThorlabsSciCam(1).Running = 0;
+                otherwise
+            end
+            msg = [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tMon_PreviewSwitch\tPreview Switch as: '...
+                val '\r\n'];
         otherwise
             errordlg('Rocker tag unrecognizable!');
     end
@@ -506,6 +638,9 @@ function Ses_Start
         return;
     end
     %% Update Xin.D.Sys.NI & Power Meter
+        % frame trigger 
+        Xin.D.Sys.NIDAQ.Task_CO_TrigFrame.chan(1).lowTicks =  Xin.D.Sys.NIDAQ.Config.DevTimebaseRate/Xin.D.Sys.Camera.MainFrameRate/2;
+        Xin.D.Sys.NIDAQ.Task_CO_TrigFrame.chan(1).highTicks = Xin.D.Sys.NIDAQ.Config.DevTimebaseRate/Xin.D.Sys.Camera.MainFrameRate/2;
         Xin.D.Sys.NIDAQ.Task_AO_Xin.time.sampsPerChanToAcquire = ...
                                     length( Xin.D.Ses.Load.SoundWave)*...
                                     Xin.D.Ses.Load.AddAttNumTotal*...
@@ -549,6 +684,28 @@ function Ses_Start
             Xin.D.Sys.PowerMeter{1}.WAVelength =        Xin.D.Sys.Light.Wavelength;
             SetupThorlabsPowerMeters('Xin');
     end
+    %% Main Camera Specific
+    switch Xin.D.Sys.Camera.MainCam
+        case 'Thorlabs'
+            videoinfocam = {...
+            ['System Cam DispGainNum: ',        num2str(Xin.D.Sys.ThorlabsSciCam(1).DispGainNum),	' (frames); '],...
+            ['System Cam Shutter: ',            sprintf('%5.2f',Xin.D.Sys.ThorlabsSciCam(1).Shutter),	' (ms); '],...
+            '',...
+            };                        
+            Xin.D.Ses.Save.SysCamShutter =      Xin.D.Sys.ThorlabsSciCam(1).Shutter;
+            Xin.D.Ses.Save.SysCamGain =         NaN;
+            Xin.D.Ses.Save.SysCamDispGainNum =  Xin.D.Sys.ThorlabsSciCam(1).DispGainNum;   
+
+        case 'PointGrey'
+            videoinfocam = {...
+            ['System Cam DispGainNum: ',        num2str(Xin.D.Sys.PointGreyCam(3).DispGainNum),	' (frames); '],...
+            ['System Cam Shutter: ',            sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Shutter),	' (ms); '],...
+            ['System Cam Gain: ',               sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Gain),	' (dB); '],...
+            };
+            Xin.D.Ses.Save.SysCamShutter =      Xin.D.Sys.PointGreyCam(3).Shutter;
+            Xin.D.Ses.Save.SysCamGain =         Xin.D.Sys.PointGreyCam(3).Gain;
+            Xin.D.Ses.Save.SysCamDispGainNum =  Xin.D.Sys.PointGreyCam(3).DispGainNum;
+    end 
 	%% Questdlg the information
     disp('Trial Order:');
     disp(Xin.D.Ses.Load.TrlOrderMat);
@@ -561,9 +718,9 @@ function Ses_Start
      	['System Light Head Cube: ',        Xin.D.Sys.Light.HeadCube,                           '; '],...
         ['System Camera Lens Angle: ',      num2str(Xin.D.Sys.CameraLens.Angle),                'º; '],...
         ['System Camera Lens Aperture: ',   sprintf('f/%.2g',Xin.D.Sys.CameraLens.Aperture),	'; '],...
-        ['System Cam DispGainNum: ',        num2str(Xin.D.Sys.PointGreyCam(3).DispGainNum),	' (frames); '],...
-        ['System Cam Shutter: ',            sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Shutter),	' (ms); '],...
-        ['System Cam Gain: ',               sprintf('%5.2f',Xin.D.Sys.PointGreyCam(3).Gain),	' (dB); '],...
+        videoinfocam{1},...
+        videoinfocam{2},...
+        videoinfocam{3},...
     	['Monkey ID: ',                     Xin.D.Mky.ID,                                       '; '],...
      	['Monkey Side: ',                   Xin.D.Mky.Side,                                     '; '],...
         ['Monkey Prep: ',                   Xin.D.Mky.Prep,                                     '; '],...
@@ -595,7 +752,6 @@ function Ses_Start
         case 'No, Cancel and Reset';    return;
         case 'Yes, Take a Recording'     
     end  
-    
     %% Setup Recording File & Memory Allocation
     datanamet =    datestr(now, 30);
     dataname =     [datanamet(3:end),  '_',...
@@ -603,8 +759,16 @@ function Ses_Start
         Xin.D.Sys.Light.Port,    '_',...
         Xin.D.Sys.Light.HeadCube];   
     Xin.D.Ses.DataFile =   [dataname '.rec'];
-    hFile =                 fopen([Xin.D.Exp.DataDir, Xin.D.Ses.DataFile],'w');   
+    Xin.D.Ses.hDataFile =   fopen([Xin.D.Exp.DataDir, Xin.D.Ses.DataFile],'w');  
     
+    % new added @201124, for differentiate Thorlabs and PT cameras
+        Xin.D.Vol.UpdFrameNum =	round(  Xin.D.Sys.Camera.MainFrameRate / ...
+                                        Xin.D.Sys.Camera.RecUpdateRate);
+    Xin.D.Ses.Save.SysCamMain =         Xin.D.Sys.Camera.MainCam; 
+    Xin.D.Ses.Save.SysCamDeviceName = 	Xin.D.Sys.Camera.DeviceName;
+        Xin.D.Ses.Save.SysCamFrameRate =    Xin.D.Sys.Camera.MainFrameRate;
+        Xin.D.Ses.Save.SysCamResolution =   Xin.D.Sys.Camera.Resolution;
+        Xin.D.Ses.Save.SysCamBinNumber =    Xin.D.Sys.Camera.SaveBinNum;
 	Xin.D.Ses.Save.SysLightSource =     Xin.D.Sys.Light.Source;   
 	Xin.D.Ses.Save.SysLightWavelength = Xin.D.Sys.Light.Wavelength;
 	Xin.D.Ses.Save.SysLightPort =       Xin.D.Sys.Light.Port;
@@ -614,9 +778,6 @@ function Ses_Start
     Xin.D.Ses.Save.SysCameraLensAngle = Xin.D.Sys.CameraLens.Angle;
     Xin.D.Ses.Save.SysCameraLensAperture = ...
                                         Xin.D.Sys.CameraLens.Aperture;
-	Xin.D.Ses.Save.SysCamShutter =      Xin.D.Sys.PointGreyCam(3).Shutter;
-	Xin.D.Ses.Save.SysCamGain =         Xin.D.Sys.PointGreyCam(3).Gain;
-	Xin.D.Ses.Save.SysCamDispGainNum =  Xin.D.Sys.PointGreyCam(3).DispGainNum;
   	Xin.D.Ses.Save.MkyID =              Xin.D.Mky.ID;
     Xin.D.Ses.Save.MkySide =            Xin.D.Mky.Side;
     Xin.D.Ses.Save.MkyPrep =            Xin.D.Mky.Prep;
@@ -653,7 +814,7 @@ function Ses_Start
     Xin.D.Ses.Save.TrlNames =           Xin.D.Trl.Load.Names;
     Xin.D.Ses.Save.TrlAttenuations =	Xin.D.Trl.Load.Attenuations;  
     
-    %% GUI Update & Lock, then do the Session Initiation Function     
+    %% GUI Update & Lock
     Xin.D.Ses.Load.SoundFigureTitle =   [   ': now playing "' ...
                                             Xin.D.Ses.Load.SoundFile '"'];    
     Xin.D.Sys.FigureTitle =             [   Xin.D.Sys.FullName ...
@@ -663,16 +824,14 @@ function Ses_Start
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tSession is about to start with the sound: "' ...
         Xin.D.Ses.Load.SoundFile '"\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
-    msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tTDT PA5 set up\r\n'];
-    updateMsg(Xin.D.Exp.hLog, msg);
     %% Camera Trigger Settings & Start the Video Recording   
     if Xin.D.Ses.MonitoringCams
         for i = 1:Xin.D.Ses.MonitoringCams
-%             hVWC{i} = VideoWriter([Xin.D.Exp.DataDir, datanamet(3:end),'_#',...
-%                 Xin.D.Sys.PointGreyCam(i).Comments,'.mj2'], 'Archival');
-%             hVWC{i}.FrameRate =             Xin.D.Sys.PointGreyCam(i).FrameRate;
-%             hVWC{i}.LosslessCompression =   true;
-%             hVWC{i}.MJ2BitDepth =           8;
+            hVWC{i} = VideoWriter([Xin.D.Exp.DataDir, datanamet(3:end),'_#',...
+                Xin.D.Sys.PointGreyCam(i).Comments,'.mj2'], 'Archival');
+            hVWC{i}.FrameRate =             Xin.D.Sys.PointGreyCam(i).FrameRate;
+            hVWC{i}.LosslessCompression =   true;
+            hVWC{i}.MJ2BitDepth =           8;
             hVWC{i} = VideoWriter([Xin.D.Exp.DataDir, datanamet(3:end),'_#',...
                 Xin.D.Sys.PointGreyCam(i).Comments,'.avi'], 'Grayscale AVI');
             hVWC{i}.FrameRate =             Xin.D.Sys.PointGreyCam(i).FrameRate;
@@ -684,9 +843,15 @@ function Ses_Start
             start(Xin.HW.PointGrey.Cam(i).hVid);  
         end
     end
-    CtrlPointGreyCams('Trigger_Mode', 3, 'HardwareRec'); 
-	Xin.HW.PointGrey.Cam(3).hVid.TriggerRepeat = Xin.D.Ses.FrameTotal - 1;
-	start(          Xin.HW.PointGrey.Cam(3).hVid);
+    switch Xin.D.Sys.Camera.MainCam
+        case 'PointGrey'
+            CtrlPointGreyCams('Trigger_Mode', 3, 'HardwareRec'); 
+            Xin.HW.PointGrey.Cam(3).hVid.TriggerRepeat = Xin.D.Ses.FrameTotal - 1;
+            start(          Xin.HW.PointGrey.Cam(3).hVid);
+        case 'Thorlabs'
+            CtrlThorlabsSciCams('SetupAndArm', 1,   4,  1,  'hard');
+            %                                  N,   bin,FPT,trigger         
+    end
     msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tPointGrey set up\r\n'];
     updateMsg(Xin.D.Exp.hLog, msg);
     %% Initialize Ses timing related stuff
@@ -694,9 +859,14 @@ function Ses_Start
     Xin.D.Ses.UpdateNumCurrentAI = 0;  
     updateTrial;    % this also updates the PA5     
     %% NI Start
-    StartNIDAQ;     
+% Xin.D.Sys.NIDAQ.Task_CO_TrigFrame.chan(1).lowTicks =  Xin.D.Sys.NIDAQ.Config.DevTimebaseRate/20/2;
+% Xin.D.Sys.NIDAQ.Task_CO_TrigFrame.chan(1).highTicks = Xin.D.Sys.NIDAQ.Config.DevTimebaseRate/20/2;
+
+    StartNIDAQ;
                 Xin.D.Ses.Status =	1;  % Session status switched to started
     %% Capturing Video
+switch Xin.D.Sys.Camera.MainCam
+    case 'PointGrey'
     while(1)
         %% Wait until at least a full block (assume 16) of frames is available
         while(1)
@@ -726,7 +896,7 @@ function Ses_Start
         Xin.D.Vol.UpdFrameBlockS2 = sum(Xin.D.Vol.UpdFrameBlockS1, 1, 'native');  
         Xin.D.Vol.UpdFrameBlockS3 = sum(Xin.D.Vol.UpdFrameBlockS2, 3, 'native');
         Xin.D.Vol.UpdFrameBlockS4 = squeeze(Xin.D.Vol.UpdFrameBlockS3);
-        fwrite(hFile, Xin.D.Vol.UpdFrameBlockS4, 'uint16');
+        fwrite(Xin.D.Ses.hDataFile, Xin.D.Vol.UpdFrameBlockS4, 'uint16');
         % Metadata: AbsTime, FrameNumber, RelativeFrame, TriggerIndex
         Xin.D.Vol.UpdMetadataBlockS1 = struct2cell(Xin.D.Vol.UpdMetadataBlockRaw);
         Xin.D.Vol.UpdMetadataBlockS2 = cell2mat(Xin.D.Vol.UpdMetadataBlockS1(1,:)');
@@ -753,12 +923,37 @@ function Ses_Start
                 Xin.D.Ses.Status =	0;  % Session status switched to stopped  
                 msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tAll frames recorded. Session about to stop\r\n'];
                 updateMsg(Xin.D.Exp.hLog, msg);
-                pause(2);
+                pause(1);
             break;
         elseif  Xin.D.Ses.Status ==	-1  % cancelling flag is raised 
             break;            
         end
     end
+	case 'Thorlabs'
+    while Xin.D.Sys.ThorlabsSciCam(1).Running
+        %% Wait until the next frame is available
+        pause(Xin.D.Sys.ThorlabsSciCam(1).DispPeriod/1001);
+        status = updatePreviewFrameThorlabs(1);
+        if status && mod(Xin.D.Sys.ThorlabsSciCam(1).frameNumCurr, Xin.D.Vol.UpdFrameNum) == 0
+            updateTrial;
+            Xin.D.Ses.FrameAcquired =   Xin.D.Sys.ThorlabsSciCam(1).frameNumCurr;   
+            set(Xin.UI.H.hSes_FrameAcquired_Edit,   'string', ...
+                sprintf('-)%d', Xin.D.Ses.FrameAcquired) );
+        end
+        %% Stopping or Cancelling
+        if Xin.D.Sys.ThorlabsSciCam(1).frameNumCurr == Xin.D.Ses.FrameTotal
+                                        % if All Frames Are Acquired and
+                                        % Read, stopping
+                Xin.D.Ses.Status =	0;  % Session status switched to stopped 
+            Xin.D.Sys.ThorlabsSciCam(1).Running = false; 
+                msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tAll frames recorded. Session about to stop\r\n'];
+                updateMsg(Xin.D.Exp.hLog, msg);
+                pause(1);
+        elseif  Xin.D.Ses.Status ==	-1  % cancelling flag is raised 
+            Xin.D.Sys.ThorlabsSciCam(1).Running = false;
+        end    
+    end
+end
     %% NI Stop
     StopNIDAQ;   
     %% GUI Release
@@ -777,15 +972,25 @@ function Ses_Start
                                                 Xin.D.Ses.Load.SoundFile '" recording session has ended'];
     elseif	Xin.D.Ses.Status ==	-1      % cancelled
         %% Camera Stop
-        stop(          Xin.HW.PointGrey.Cam(3).hVid);
+        if strcmp(Xin.D.Sys.Camera.MainCam, 'PointGrey')
+            stop(	Xin.HW.PointGrey.Cam(3).hVid);
+        end
         msg =   [datestr(now, 'yy/mm/dd HH:MM:SS.FFF') '\tSesStart\tSession cancelled\r\n']; 
         Xin.D.Ses.Load.SoundFigureTitle =   [   ': now "' ...
                                                 Xin.D.Ses.Load.SoundFile '" recording session cancelled'];
                 Xin.D.Ses.Status =	0;  % Session status switched to stopped
     end
     %% Release the camera and the recording file
-	fclose(hFile);      
+	fclose(Xin.D.Ses.hDataFile);      
+    switch Xin.D.Sys.Camera.MainCam
+        case 'PointGrey'
             CtrlPointGreyCams('Trigger_Mode', 3, 'SoftwareGrab');
+        case 'Thorlabs'
+            if (isvalid(Xin.HW.Thorlabs.hSciCam{1}))
+                disp('Stop camera preview');
+                Xin.HW.Thorlabs.hSciCam{1}.Disarm;
+            end
+    end
 	if Xin.D.Ses.MonitoringCams
         for i = 1:Xin.D.Ses.MonitoringCams
             stop(Xin.HW.PointGrey.Cam(i).hVid);
@@ -834,6 +1039,7 @@ function Cam_CleanUp
                     fclose(     Xin.HW.Thorlabs.PM100{i}.h);
                 end
                 instrreset;
+                fprintf('Thorlabs Power Meters Cleaned Up\n');
             catch
 %                 warndlg('Can not close Thorlabs Power Meters'); 
 %                 % not necessary for Xintrinsic
@@ -845,9 +1051,45 @@ function Cam_CleanUp
                     delete(     Xin.HW.PointGrey.Cam(i).hVid);
                 end
                 imaqreset;
+                fprintf('PointGrey Cameras Cleaned Up\n');
             catch
                 warndlg('Can not clear PointGrey Cameras');
             end 
+            %% Stop, Close, Delete, Dispose Thorlabs Sci Cams
+            try                
+                % Close TLCamera if opened
+                if (isfield(Xin.HW,'Thorlabs'))
+                    if (isfield(Xin.HW.Thorlabs,'hSciCam'))
+                        if Xin.D.Sys.ThorlabsSciCam(1).Running
+                            GUI_Rocker('hMon_PreviewSwitch_Rocker',	'OFF'); 
+                        end
+                        drawnow;
+                        for i = 1:length(Xin.HW.Thorlabs.hSciCam)
+                            % Stop the Camera
+                            Xin.D.Sys.ThorlabsSciCam(i).Running = false;
+                            pause(Xin.D.Sys.ThorlabsSciCam(i).DispPeriod*2);
+                            if ( ~isempty(Xin.HW.Thorlabs.hSciCam{i}) && ...
+                                  isvalid(Xin.HW.Thorlabs.hSciCam{i}) )
+                                % if the camera is armed, stop the camera.
+                                if (Xin.HW.Thorlabs.hSciCam{i}.IsArmed)
+                                    Xin.HW.Thorlabs.hSciCam{i}.Disarm;
+                                end
+                                Xin.HW.Thorlabs.hSciCam{i}.Dispose;
+                                delete(Xin.HW.Thorlabs.hSciCam{i});
+                            end
+                        end
+                    end
+                    % Close TLCameraSDK
+                    if (isfield(Xin.HW.Thorlabs, 'tlCameraSDK'))
+                        Xin.HW.Thorlabs.tlCameraSDK.Dispose;
+                        delete(Xin.HW.Thorlabs.tlCameraSDK);
+                        delete(Xin.HW.Thorlabs.tlCameraSerialNumbers);
+                fprintf('Thorlabs Scientific Cameras Cleaned Up\n');
+                    end
+                end
+            catch 
+                warndlg('Can not clear Thorlabs Sci Cameras');
+            end
             %% Stop & Delete NI-DAQ tasks
             try
                 if  isfield(Xin.HW, 'NI')
@@ -858,17 +1100,21 @@ function Cam_CleanUp
                         eval(strcat('try;',TaskName,'.delete(); end;'));
                     end
                 end
+                fprintf('NI-DAQ Tasks Cleaned Up\n');
             catch
                 warndlg('Can not delete NI-DAQ tasks');
             end           
             %% Clean Up Figure and Data
             try
                 delete(Xin.UI.H0.hFig);
-                for i =1:(length(Xin.D.Sys.PointGreyCam)-1)
-                    if isfield(Xin.UI.FigPGC(i), 'hFig')
-                        delete(Xin.UI.FigPGC(i).hFig);
+                if isfield(Xin.UI, 'FigPGC')
+                    for i =1:length(Xin.UI.FigPGC)
+                        if isfield(Xin.UI.FigPGC(i), 'hFig')
+                            delete(Xin.UI.FigPGC(i).hFig);
+                        end
                     end
                 end
+                fprintf('GUI Figures Cleaned Up\n');
             catch
                 warndlg('Can not delete the UI Figure');
             end
