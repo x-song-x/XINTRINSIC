@@ -14,3 +14,6 @@ XINTRINSIC recording and analysis routines are implemented in Matlab
   - [fluffy-goggles](https://github.com/x-song-x/fluffy-goggles): 
     - XinStimEx: the synchronized stimulation delivery (Visual & Tactile, XINTRINSIC itself can deliver Auditory stimuli)
     - XinProc: the analysis routine
+
+# Discussions and Questions Are Welcome 
+Please visit our project discussion panel [here](https://github.com/x-song-x/XINTRINSIC/discussions)
