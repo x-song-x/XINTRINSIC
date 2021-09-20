@@ -53,10 +53,11 @@ if  Xin.D.Ses.UpdateNumCurrent < Xin.D.Ses.UpdateNumTotal
         Xin.D.Trl.Load.AttAddCurrent =      Xin.D.Ses.Load.AddAtts(Xin.D.Trl.Load.AttNumCurrent);        
         Xin.D.Trl.Load.AttCurrent =         Xin.D.Trl.Load.AttDesginCurrent + Xin.D.Trl.Load.AttAddCurrent;
         
-        % Real Updates
+        % Real Updates, for PA5
         if Xin.D.Sys.TDT_PA5_OnOff
             Xin.HW.TDT.PA5.SetAtten(Xin.D.Trl.Load.AttCurrent);    
         end
+        % Real Updates, for GUI
         set(Xin.UI.H.hTrl_NumCurrent_Edit,      'String',	num2str(Xin.D.Trl.Load.NumCurrent));
         set(Xin.UI.H.hTrl_StimNumCurrent_Edit,  'String',	Xin.D.Trl.Load.StimNumCurrent);
         set(Xin.UI.H.hTrl_StimNumNext_Edit,     'String',	Xin.D.Trl.Load.StimNumNext);
