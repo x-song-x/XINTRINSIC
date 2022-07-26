@@ -55,6 +55,7 @@ switch Xin.D.Sys.Configurations.CameraDriver{idx}
         % Xin.D.Sys.Camera related
         Xin.D.Sys.Camera.MainCam =          'PointGrey';
         Xin.D.Sys.Camera.DeviceName =       Xin.D.Sys.PointGreyCam(3).DeviceName;
+        Xin.D.Sys.Camera.DeviceSN =         Xin.D.Sys.PointGreyCam(3).serialNumber;
         Xin.D.Sys.Camera.MainFrameRate =    Xin.D.Sys.PointGreyCam(3).FrameRate;
         Xin.D.Sys.Camera.Resolution =       [1200 1920];
         Xin.D.Sys.Camera.Shutter =      Xin.D.Sys.PointGreyCam(3).Shutter;
@@ -108,8 +109,10 @@ switch Xin.D.Sys.Configurations.CameraDriver{idx}
         Xin.D.Sys.PointGreyCam = Xin.D.Sys.PointGreyCam(1:2);   % get off the 3rd PT camera
                 SetupPointGreyCams;
         % Xin.D.Sys.Camera related
+        Xin.D.Sys.ThorlabsSciCam(1).serialNumber = Xin.D.Sys.Configurations.CameraSerialNumber{idx};
         Xin.D.Sys.Camera.MainCam =          'Thorlabs';
         Xin.D.Sys.Camera.DeviceName =       Xin.D.Sys.ThorlabsSciCam(1).DeviceName;
+        Xin.D.Sys.Camera.DeviceSN =         Xin.D.Sys.Configurations.CameraSerialNumber{idx};
         Xin.D.Sys.Camera.MainFrameRate =    Xin.D.Sys.ThorlabsSciCam(1).FrameRate;
         Xin.D.Sys.Camera.Resolution =       [   Xin.D.Sys.ThorlabsSciCam(1).ROIHeight, ...
                                                 Xin.D.Sys.ThorlabsSciCam(1).ROIWidth ];                                
@@ -136,7 +139,6 @@ switch Xin.D.Sys.Configurations.CameraDriver{idx}
         set(Xin.UI.FigTLSC(1).CP.hExp_RefImage_Momentary,       'UserData',	1);
         set(Xin.UI.FigTLSC(1).CP.hSes_CamTrigger_Rocker,        'UserData', 1);
         % Initiate the Main Camera
-        Xin.D.Sys.ThorlabsSciCam(1).serialNumber = Xin.D.Sys.Configurations.CameraSerialNumber{idx};
             SetupThorlabsSciCams;
             CtrlThorlabsSciCams('InitializeCallbacks', 1);
             CtrlThorlabsSciCams('Cam_Shutter',	1, Xin.D.Sys.ThorlabsSciCam(1).Shutter);
@@ -186,16 +188,19 @@ set(Xin.UI.H.hMon_Pupillometry_Momentary,'callback',            [Xin.D.Sys.Name,
 set(Xin.UI.H.hMon_SyncRec_Rocker,       'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 set(Xin.UI.H.hMon_PreviewSwitch_Rocker, 'SelectionChangeFcn',   [Xin.D.Sys.Name, '(''GUI_Rocker'')']);
 
-        GUI_Toggle( 'hSys_LightSource_Toggle',      'Green');
-        GUI_Rocker( 'hSys_LightConfig_Rocker',      'Koehler + PBS');
+switch Xin.D.Sys.Camera.DeviceSN
+    case '08337';   Xin.D.Mky.Side = 'LEFT';    Xin.D.Mky.ID = 'M56E';
+    case '06019';   Xin.D.Mky.Side = 'RIGHT';   Xin.D.Mky.ID = 'M160E';
+end      
+        GUI_Toggle( 'hSys_LightSource_Toggle',      Xin.D.Sys.Light.Source);
+        GUI_Rocker( 'hSys_LightConfig_Rocker',     [Xin.D.Sys.Light.Port, ' + ', Xin.D.Sys.Light.HeadCube(end-2:end)]);
         GUI_Poten(	'hSys_LightDiffuser_Poten',     Xin.D.Sys.Light.Diffuser);
         GUI_Poten(	'hSys_CameraLensAngle_Poten',   Xin.D.Sys.CameraLens.Angle);
         GUI_Poten(	'hSys_CameraLensAperture_Poten',Xin.D.Sys.CameraLens.Aperture);
-        GUI_Toggle( 'hMky_ID_Toggle',               Xin.D.Mky.Lists.ID{1});
+        GUI_Toggle( 'hMky_ID_Toggle',               Xin.D.Mky.ID);
         GUI_Rocker( 'hMky_Side_Rocker',             Xin.D.Mky.Side);
         GUI_Rocker( 'hMky_Prep_Rocker',             Xin.D.Mky.Prep);
         GUI_Poten(	'hExp_Depth_Poten',             Xin.D.Exp.Depth);
-
 drawnow;
 
 pause(0.5);
@@ -623,6 +628,10 @@ function Ses_Start
         return;                         % Return and leave the cancelling procedures 
                                         % to the recording thread
     end                                 % Otherwise proceed to start recording
+    %% Rerandomize the Trial order
+    if strcmp(Xin.D.Ses.Load.TrlOrder, 'Randomized')
+            SetupSesLoad('Xin', 'TrlOrder');
+    end
     %% Check Surface Image
     tag =   0;
     try

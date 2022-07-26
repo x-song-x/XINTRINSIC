@@ -24,7 +24,8 @@ Xin.UI.C = S.Color;
     % Figure scale
     S.FigSideTitleHeight = 30; 	
     S.FigSideToolbarWidth = 60;
-    S.FigSideWidth = 20; 
+%     S.FigSideWidth = 20; 
+    S.FigSideWidth = 1; 
 %     S.FigSideWidth = 8; 
 
     S.FigWidth =        1250;

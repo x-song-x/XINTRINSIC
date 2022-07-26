@@ -117,7 +117,7 @@ for i = 1:length(Xin.D.Sys.ThorlabsSciCam)
     %%    
 
     Xin.D.Sys.ThorlabsSciCam(i).Shutter =       Xin.D.Sys.ThorlabsSciCam(i).ExposureTime_ms; 
-    Xin.D.Sys.ThorlabsSciCam(i).DispGainBit =	0;
+    Xin.D.Sys.ThorlabsSciCam(i).DispGainBit =	3;  % default if bit:3, num:8
 	Xin.D.Sys.ThorlabsSciCam(i).DispGainNum =	2^Xin.D.Sys.ThorlabsSciCam(i).DispGainBit;
     Xin.D.Sys.ThorlabsSciCam(i).DispPeriod =	1/Xin.D.Sys.ThorlabsSciCam(i).PreviewRate;
     

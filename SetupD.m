@@ -70,30 +70,33 @@ for d = 1
         {'PointGrey'},  {'15452576'},   {1},...
         'VariableNames',            SysConfigVarName)];
     Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
-        {'Thorlabs_06019_PA5:OFF_'},...
-        {'Thorlabs'},   {'06019'},      {0},...
-        'VariableNames',            SysConfigVarName)];  
-    Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
-        {'Thorlabs_06019_PA5:ON_'},...
-        {'Thorlabs'},   {'06019'},      {1},...
-        'VariableNames',            SysConfigVarName)];   
-    Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
-        {'Thorlabs_08337_PA5:OFF_'},...
-        {'Thorlabs'},   {'08337'},      {0},...
-        'VariableNames',            SysConfigVarName)];  
-    Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
-        {'Thorlabs_08337_PA5:ON_'},...
+        {'Thorlabs_08337_PA5:ON_ImagingSide:LEFT,   (M56E)'},...
         {'Thorlabs'},   {'08337'},      {1},...
-        'VariableNames',            SysConfigVarName)];          
+        'VariableNames',            SysConfigVarName)];    
+    Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
+        {'Thorlabs_06019_PA5:ON_ImagingSide:RIGHT, (M160E)'},...
+        {'Thorlabs'},   {'06019'},      {1},...
+        'VariableNames',            SysConfigVarName)];       
+%     Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
+%         {'Thorlabs_06019_PA5:OFF_'},...
+%         {'Thorlabs'},   {'06019'},      {0},...
+%         'VariableNames',            SysConfigVarName)];      
+%     Xin.D.Sys.Configurations = [Xin.D.Sys.Configurations; table(...
+%         {'Thorlabs_08337_PA5:OFF_'},...
+%         {'Thorlabs'},   {'08337'},      {0},...
+%         'VariableNames',            SysConfigVarName)];
     
 	%%%%%%%%%%%%%%%%%%%%%%% System Light Configuration Information
-    Xin.D.Sys.Light.Source =        'Green';
-    Xin.D.Sys.Light.Wavelength =    530;
+%     Xin.D.Sys.Light.Source =        'Green';
+%     Xin.D.Sys.Light.Wavelength =    530;
+    Xin.D.Sys.Light.Source =        'Blue';
+    Xin.D.Sys.Light.Wavelength =    470;
     Xin.D.Sys.Light.Sources =       {'Amber', 'Green', 'Blue', 'Red', 'FRed', 'NIR'};
     Xin.D.Sys.Light.Wavelengths = 	[ 590,     530,     470,    625,   730,    850 ];
     
     Xin.D.Sys.Light.Port =          'Koehler';
-    Xin.D.Sys.Light.HeadCube =      'Pola_PBS';     
+%     Xin.D.Sys.Light.HeadCube =      'Pola_PBS';     
+    Xin.D.Sys.Light.HeadCube =      'Fluo_GFP';    
     Xin.D.Sys.Light.Configs(1).Port =       'LtGuide';
     Xin.D.Sys.Light.Configs(1).HeadCube =   'Pola_PBS';
     Xin.D.Sys.Light.Configs(2).Port =       'Koehler';
@@ -103,11 +106,11 @@ for d = 1
     
     Xin.D.Sys.Light.Monitoring =    'N';    % N: No; S: Slow; F: Fast
     
-    Xin.D.Sys.Light.Diffuser =      15;
-    Xin.D.Sys.Light.Diffusers =     [   0   5   10  15  20];
+    Xin.D.Sys.Light.Diffuser =      50;
+    Xin.D.Sys.Light.Diffusers =     [   0   5   10  15  20  50];
     
 	%%%%%%%%%%%%%%%%%%%%%%% System CameraLens Configuration Information
-    Xin.D.Sys.CameraLens.Angle =        74;
+    Xin.D.Sys.CameraLens.Angle =        300;
     Xin.D.Sys.CameraLens.Aperture =     1.9;
     Xin.D.Sys.CameraLens.Apertures =    [1.9 2.8 4 5.6 8 11 16];
     
@@ -405,16 +408,17 @@ end
 %% D.Mky (Monkey)
 for d = 1
 	%%%%%%%%%%%%%%%%%%%%%%% Monkey 
-    Xin.D.Mky.Lists.ID =            {   'M00x',     'M96B',     'M102D';
-                                        'M97E',     'M92F',     'M160E';
-                                        'M126D',    'M117B',	'M15E';
-                                        'M145F',	'M133E',    'M60F'     };
+    Xin.D.Mky.Lists.ID =            {   'M00x',     'M52F',     '';
+                                        'M56E',     'M160E',    'M102D';
+                                        '',         '',         '';
+                                        '',         '',         ''     };
     Xin.D.Mky.Lists.Side =          {'LEFT', 'RIGHT', ''};     
     Xin.D.Mky.Lists.Prep =          {'Win', 'Skull', ''};
     
     Xin.D.Mky.ID =                  Xin.D.Mky.Lists.ID{1};
     Xin.D.Mky.Side =                Xin.D.Mky.Lists.Side{1};
     Xin.D.Mky.Prep =                Xin.D.Mky.Lists.Prep{1};
+%     if 
 end
 
 %% D.Exp (Experiment, one experiment should be at the same location)
